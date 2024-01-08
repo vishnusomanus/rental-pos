@@ -6,7 +6,16 @@
         <a class="nav-link" data-widget="pushmenu" href="{{route('home')}}" role="button"><i class="fas fa-bars"></i></a>
       </li>
     </ul>
-
+    
+ <!-- Sidebar user (optional) -->
+    <div class="navbar-nav ml-auto">
+        <div class="image">
+            <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2 img-sm" alt="User Image">
+        </div>
+        <div class="info btn btn-sm">
+            <a href="#" class="d-block">{{ auth()->user()->getFullname() }}</a>
+        </div>
+    </div>
     <!-- SEARCH FORM -->
     {{--
     <form class="form-inline ml-3">
@@ -19,7 +28,7 @@
         </div>
       </div>
     </form>
-    --}}
+    
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
@@ -57,6 +66,6 @@
           <i class="fas fa-th-large"></i>
         </a>
       </li>
-    </ul>
+    </ul>--}}
   </nav>
   <!-- /.navbar -->

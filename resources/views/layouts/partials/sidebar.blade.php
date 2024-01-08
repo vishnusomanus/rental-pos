@@ -9,15 +9,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2" alt="User Image">
-            </div>
-            <div class="info">
-                <a href="#" class="d-block">{{ auth()->user()->getFullname() }}</a>
-            </div>
-        </div>
+       
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
@@ -30,25 +22,25 @@
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('products.index') }}" class="nav-link {{ activeSegment('products') }}">
-                        <i class="nav-icon fas fa-th-large"></i>
+                        <i class="nav-icon fas fa-cart-shopping"></i>   
                         <p>{{ __('product.title') }}</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('cart.index') }}" class="nav-link {{ activeSegment('cart') }}">
-                        <i class="nav-icon fas fa-cart-plus"></i>
+                        <i class="nav-icon fas fa-store"></i>
                         <p>{{ __('cart.title') }}</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('orders.index') }}" class="nav-link {{ activeSegment('orders') }}">
-                        <i class="nav-icon fas fa-cart-plus"></i>
+                        <i class="nav-icon fas fa-bars-staggered"></i>
                         <p>{{ __('order.title') }}</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
                     <a href="{{ route('orders.pending') }}" class="nav-link {{ activeSegment('pending') }}">
-                        <i class="nav-icon fas fa-cart-plus"></i>
+                        <i class="nav-icon fas fa-clock-rotate-left"></i>
                         <p>Pending Orders</p>
                     </a>
                 </li>

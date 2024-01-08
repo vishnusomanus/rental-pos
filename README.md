@@ -50,23 +50,3 @@ Rename or copy `.env.example` file to `.env` 1.`php artisan key:generate` to gen
 1. `php artisan serve` or Laravel Homestead
 1. Visit `localhost:8000` in your browser. Email: `admin@gmail.com`, Password: `admin123`.
  <!-- 1. Online demo: [pos.khmernokor.com](https://pos.khmernokor.com/) -->
-
-### Screenshots
-
-#### Product list
-
-![Product list](https://raw.githubusercontent.com/angkosal/laravel-pos/master/screenshots/products_list.png)
-
-#### Create order
-
-![Create order](https://raw.githubusercontent.com/angkosal/laravel-pos/master/screenshots/pos.png)
-
-#### Order list
-
-![Order list](https://raw.githubusercontent.com/angkosal/laravel-pos/master/screenshots/order_list.png)
-
-#### Customer list
-
-![Customer list](https://raw.githubusercontent.com/angkosal/laravel-pos/master/screenshots/customer_list.png)
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/angkosal)

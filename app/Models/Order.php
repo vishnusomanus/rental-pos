@@ -47,6 +47,10 @@ class Order extends Model
     {
         return number_format($this->total(), 2);
     }
+    public function balance()
+    {
+        return $this->total() - $this->receivedAmount();
+    }
 
     public function receivedAmount()
     {

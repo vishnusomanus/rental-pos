@@ -6,6 +6,7 @@ use App\Http\Requests\OrderStoreRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Payment;
 
 class OrderController extends Controller
 {
@@ -87,5 +88,24 @@ class OrderController extends Controller
             'user_id' => $request->user()->id,
         ]);
         return 'success';
+    }
+    public function edit(Order $order)
+    {
+        $order->load('customer', 'items.product');
+        return view('orders.edit', compact('order'));
+    }
+
+    public function update(Request $request, Order $order)
+    {
+        $payment = Payment::create([
+            'amount' => $request->balance,
+            'order_id' => $order->id,
+            'user_id' => $request->user()->id,
+        ]);
+    
+        if (!$payment) {
+            return redirect()->back()->with('error', "error occured");
+        }
+        return redirect()->route('orders.pending')->with('success', "Order updated!");
     }
 }
