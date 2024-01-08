@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->decimal('price', 8, 4);
             $table->integer('quantity')->default(1);
+            $table->integer('days')->default(1);
             $table->foreignId('order_id');
             $table->foreignId('product_id');
             $table->timestamps();

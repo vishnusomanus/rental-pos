@@ -30,6 +30,10 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
         width: 45px;
         float: left;
     }
+    .days {
+        width: 45px;
+        float: left;
+    }
 }
 
 .order-product {
@@ -56,4 +60,8 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
         max-width: 70px;
         max-height: 70px;
     }
+}
+.dropdown.bootstrap-select.form-control {
+    border: 1px solid #ced4da;
+    background: #fff;
 }

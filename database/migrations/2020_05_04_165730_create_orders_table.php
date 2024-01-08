@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->nullable();
             $table->foreignId('user_id');
+            $table->string('proof');
+            $table->text('notes')->nullable();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');

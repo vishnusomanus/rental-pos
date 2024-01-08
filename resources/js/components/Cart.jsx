@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect  } from 'react';
 import { createRoot } from 'react-dom';
 import axios from "axios";
 import Swal from "sweetalert2";
 import { sum } from "lodash";
+import $ from 'jquery';
 import 'bootstrap-select/dist/css/bootstrap-select.min.css';
 import 'bootstrap-select/dist/js/bootstrap-select.min.js';
 
@@ -44,6 +45,7 @@ class Cart extends Component {
         this.loadCart();
         this.loadProducts();
     }
+    
 
     // load the transaltions for the react component
     loadTranslations() {
@@ -54,11 +56,13 @@ class Cart extends Component {
             console.error("Error loading translations:", error);
         });
     }
+    
 
     loadCustomers() {
         axios.get(`/admin/customers`).then((res) => {
             const customers = res.data;
             this.setState({ customers });
+            
         });
     }
 
@@ -220,6 +224,7 @@ class Cart extends Component {
                     })
                     .then((res) => {
                         this.loadCart();
+                        window.location.href = '/admin/orders';
                         return res.data;
                     })
                     .catch((err) => {
@@ -234,6 +239,7 @@ class Cart extends Component {
         });
     }
     render() {
+        $('.selectpicker').selectpicker('refresh');
         const { cart, products, customers, barcode, translations} = this.state;
         return (
             <div className="row">
@@ -251,20 +257,24 @@ class Cart extends Component {
                             </form>
                         </div>
                         <div className="col">
-                            <select
-                                className="form-control selectpicker"
-                                onChange={this.setCustomerId}
-                                data-live-search="true"
-                                title="Select Customer"
-                            >
-                                <option value="">General Customer</option>
-                                {customers.map((cus) => (
-                                    <option
-                                        key={cus.id}
-                                        value={cus.id}
-                                    >{`${cus.first_name} ${cus.last_name}`}</option>
-                                ))}
-                            </select>
+                            {customers.length > 0 ? (
+                                <select
+                                    className="form-control selectpicker"
+                                    onChange={this.setCustomerId}
+                                    data-live-search="true"
+                                    title="Select Customer"
+                                    data-size="5" // Set the number of visible options
+                                >
+                                    <option value="">General Customer</option>
+                                    {customers.map((cus) => (
+                                        <option key={cus.id} value={cus.id}>
+                                            {`${cus.first_name} ${cus.last_name}`}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <p>Loading customers...</p>
+                            )}
                         </div>
                     </div>
                     <div className="user-cart">
@@ -341,8 +351,8 @@ class Cart extends Component {
                     </div>
                     <div className="row">
                         <div className="col">
-                            <input type="text" placeholder="Rental Guarantee: ID Cards, Passports, etc." class="form-control mb-2" onChange={this.setCustomerProof} />
-                            <textarea placeholder="Details/Notes" class="form-control mb-2" onChange={this.setCustomerNotes}> </textarea>
+                            <input type="text" placeholder="Rental Guarantee: ID Cards, Passports, etc." className="form-control mb-2" onChange={this.setCustomerProof} />
+                            <textarea placeholder="Details/Notes" className="form-control mb-2"  onChange={this.setCustomerNotes}> </textarea>
                         </div>
                     </div>
                     <div className="row">

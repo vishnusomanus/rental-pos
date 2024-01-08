@@ -22,6 +22,7 @@ Laravel utilizes [Composer](https://getcomposer.org/) to manage its dependencies
 
     cd YourDirectoryName
     composer install
+    composer update
 
 ### Config file
 
