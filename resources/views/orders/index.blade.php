@@ -37,6 +37,7 @@
                     <th>{{ __('order.Status') }}</th>
                     <th>{{ __('order.To_Pay') }}</th>
                     <th>{{ __('order.Created_At') }}</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,6 +60,7 @@
                     </td>
                     <td>{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
                     <td>{{$order->created_at}}</td>
+                    <td><a target="_blank" href="{{ route('orders.invoice', $order->id) }}" class="btn btn-outline-dark btn-sm text-black"><i class="fas fa-print"></i></a></td>
                 </tr>
                 @endforeach
             </tbody>

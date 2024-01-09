@@ -7,6 +7,8 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Response;
 
 class OrderController extends Controller
 {
@@ -93,6 +95,31 @@ class OrderController extends Controller
     {
         $order->load('customer', 'items.product');
         return view('orders.edit', compact('order'));
+    }
+    public function invoice( Request $request)
+    {
+        $order = Order::findOrFail($request->id);
+        $order->load('customer', 'items.product');
+        $imagePath = public_path('images/logo.png');
+        $base64Image = base64_encode(file_get_contents($imagePath));
+        //return view('orders.invoice', compact('order', 'base64Image'));
+        
+        if ($request->headers->get('referer') === url('/admin/orders')) {
+            $dompdf = new Dompdf();
+            
+            $html = view('orders.invoice', compact('order', 'base64Image'))->render();
+            
+            $dompdf->loadHtml($html);
+            $dompdf->render();
+            $output = $dompdf->output();
+            return Response::make($output, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="invoice.pdf"',
+            ]);
+        } else {
+            return "No access!";
+        }
+
     }
 
     public function update(Request $request, Order $order)
