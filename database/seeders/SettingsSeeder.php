@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use App\Models\Setting;
@@ -15,16 +14,16 @@ class SettingsSeeder extends Seeder
     public function run()
     {
         $data = [
-            ['key' => 'app_name', 'value' => 'POS'],
-            ['key' => 'currency_symbol', 'value' => '₹'],
+            ['key' => 'app_name', 'value' => 'POS', 'white_label_id' => 1],
+            ['key' => 'currency_symbol', 'value' => '₹', 'white_label_id' => 1],
+            ['key' => 'pagination', 'value' => '20', 'white_label_id' => 1],
         ];
 
         foreach ($data as $value) {
-            Setting::updateOrCreate([
-                'key' => $value['key']
-            ], [
-                'value' => $value['value']
-            ]);
+            Setting::updateOrCreate(
+                ['key' => $value['key'], 'white_label_id' => $value['white_label_id']],
+                ['value' => $value['value']]
+            );
         }
     }
 }

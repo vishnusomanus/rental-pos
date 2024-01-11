@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('amount', 8, 4);
             $table->foreignId('order_id');
             $table->foreignId('user_id');
+            $table->foreignId('white_label_id');
             $table->timestamps();
 
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');

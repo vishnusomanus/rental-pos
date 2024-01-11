@@ -15,12 +15,32 @@ class SettingController extends Controller
     public function store(Request $request)
     {
         $data = $request->except('_token');
+        $whiteLabelId = $request->user()->white_label_id;
+        
         foreach ($data as $key => $value) {
-            $setting = Setting::firstOrCreate(['key' => $key]);
-            $setting->value = $value;
-            $setting->save();
+            // dd(Setting::where('key', $key)->where('white_label_id', $whiteLabelId)->get());
+            $setting = Setting::where('key', $key)
+                ->where('white_label_id', $whiteLabelId)
+                ->first();
+                
+            if ($setting) {
+                // Update the existing setting
+                $setting->value = $value;
+                $setting->save();
+            } else {
+                
+                // Create a new setting
+                Setting::create([
+                    'key' => $key,
+                    'value' => $value,
+                    'white_label_id' => $whiteLabelId,
+                ]);
+            }
         }
-
+    
         return redirect()->route('settings.index');
     }
+    
+    
+
 }

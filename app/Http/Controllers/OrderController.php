@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Response;
 class OrderController extends Controller
 {
     public function index(Request $request) {
+        $user = auth()->user();
         $orders = new Order();
         if($request->start_date) {
             $orders = $orders->where('created_at', '>=', $request->start_date);
@@ -20,7 +21,7 @@ class OrderController extends Controller
         if($request->end_date) {
             $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
         }
-        $orders = $orders->with(['items', 'payments', 'customer'])->latest()->paginate(10);
+        $orders = $orders->forUser($user)->with(['items', 'payments', 'customer'])->latest()->paginate(config('settings.pagination'));
 
         $total = $orders->map(function($i) {
             return $i->total();
@@ -33,6 +34,7 @@ class OrderController extends Controller
     }
 
     public function pending(Request $request) {
+        $user = auth()->user();
         $orders = new Order();
         
         if ($request->start_date) {
@@ -43,12 +45,13 @@ class OrderController extends Controller
             $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
         }
         
-        $orders = Order::query()
+        $orders = Order::forUser($user)
+        // ->query()
         ->join(DB::raw('(SELECT order_id, SUM(price) AS total_price FROM order_items GROUP BY order_id) AS oi'), 'orders.id', '=', 'oi.order_id')
         ->join(DB::raw('(SELECT order_id, SUM(amount) AS total_paid FROM payments GROUP BY order_id) AS p'), 'orders.id', '=', 'p.order_id')
         ->select('orders.*', 'oi.total_price', 'p.total_paid')
         ->whereRaw('p.total_paid = 0 OR p.total_paid < oi.total_price')
-        ->paginate(10);
+        ->paginate(config('settings.pagination'));
 
 
     
@@ -71,6 +74,7 @@ class OrderController extends Controller
             'proof' => $request->customer_proof,
             'notes' => $request->customer_notes,
             'user_id' => $request->user()->id,
+            'white_label_id' => $request->user()->white_label_id
         ]);
 
         $cart = $request->user()->cart()->get();
@@ -88,6 +92,7 @@ class OrderController extends Controller
         $order->payments()->create([
             'amount' => $request->amount,
             'user_id' => $request->user()->id,
+            'white_label_id' => $request->user()->white_label_id
         ]);
         return 'success';
     }
@@ -128,6 +133,7 @@ class OrderController extends Controller
             'amount' => $request->balance,
             'order_id' => $order->id,
             'user_id' => $request->user()->id,
+            'white_label_id' => $request->user()->white_label_id
         ]);
     
         if (!$payment) {

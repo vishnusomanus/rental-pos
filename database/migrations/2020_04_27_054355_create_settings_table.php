@@ -15,9 +15,14 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
+            $table->string('key');
             $table->text('value')->nullable();
+            $table->foreignId('white_label_id');
             $table->timestamps();
+
+            $table->unique(['key', 'white_label_id']);
+
+            $table->foreign('white_label_id')->references('id')->on('white_labels')->onDelete('cascade');
         });
     }
 

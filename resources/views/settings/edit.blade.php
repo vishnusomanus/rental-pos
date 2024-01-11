@@ -28,6 +28,27 @@
                 </span>
                 @enderror
             </div>
+            
+            <div class="form-group">
+                <label for="app_address">Address</label>
+                <textarea name="app_address" class="form-control @error('app_address') is-invalid @enderror" id="app_address" placeholder="Address">{{ old('app_address', config('settings.app_address')) }}</textarea>
+                @error('app_address')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
+
+
+            <div class="form-group">
+                <label for="pagination">Items per page</label>
+                <input type="text" name="pagination" class="form-control @error('pagination') is-invalid @enderror" id="pagination" placeholder="Items per page" value="{{ old('pagination', config('settings.pagination')) }}">
+                @error('app_pagination')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
 
             <div class="form-group">
                 <label for="currency_symbol">{{ __('settings.Currency_symbol') }}</label>

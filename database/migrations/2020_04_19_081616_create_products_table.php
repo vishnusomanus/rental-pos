@@ -21,7 +21,12 @@ return new class extends Migration
             $table->string('barcode')->unique();
             $table->decimal('price', 8, 2);
             $table->boolean('status')->default(true);
+            $table->foreignId('user_id');
+            $table->foreignId('white_label_id');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('white_label_id')->references('id')->on('white_labels')->onDelete('cascade');
         });
     }
 

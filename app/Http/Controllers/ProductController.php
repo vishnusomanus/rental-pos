@@ -18,14 +18,16 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
         $products = new Product();
+        $products = $products->forUser($user);
         if ($request->search) {
             $products = $products->where('name', 'LIKE', "%{$request->search}%");
         }
         if ($request->active) {
             $products = $products->where('status', 1);
         }
-        $products = $products->latest()->paginate(10);
+        $products = $products->latest()->paginate(config('settings.pagination'));
         if (request()->wantsJson()) {
             return ProductResource::collection($products);
         }
@@ -63,7 +65,9 @@ class ProductController extends Controller
             'barcode' => $request->barcode,
             'price' => $request->price,
             'quantity' => $request->quantity,
-            'status' => $request->status
+            'status' => $request->status,
+            'user_id' => $request->user()->id,
+            'white_label_id' => $request->user()->white_label_id
         ]);
 
         if (!$product) {

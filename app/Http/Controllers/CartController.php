@@ -51,6 +51,7 @@ class CartController extends Controller
             $request->user()->cart()->attach($product->id, [
                 'quantity' => 1,
                 'days' => $days,
+                'white_label_id' => $request->user()->white_label_id,
             ]);
         }
     

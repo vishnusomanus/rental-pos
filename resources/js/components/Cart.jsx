@@ -176,6 +176,7 @@ class Cart extends Component {
                             quantity: 1,
                             product_id: product.id,
                             user_id: 1,
+                            white_label_id: product.white_label_id,
                         },
                     };
 

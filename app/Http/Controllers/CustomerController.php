@@ -22,7 +22,8 @@ class CustomerController extends Controller
                 Customer::all()
             );
         }
-        $customers = Customer::latest()->paginate(10);
+        $user = auth()->user();
+        $customers = Customer::forUser($user)->latest()->paginate(config('settings.pagination'));
         return view('customers.index')->with('customers', $customers);
     }
 
@@ -58,6 +59,7 @@ class CustomerController extends Controller
             'address' => $request->address,
             'avatar' => $avatar_path,
             'user_id' => $request->user()->id,
+            'white_label_id' => $request->user()->white_label_id
         ]);
 
         if (!$customer) {

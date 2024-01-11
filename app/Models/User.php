@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password',
+        'first_name', 'last_name', 'email', 'password', 'role', 'white_label_id','phone', 'address'
     ];
 
     /**
@@ -40,7 +40,7 @@ class User extends Authenticatable
 
     public function cart()
     {
-        return $this->belongsToMany(Product::class, 'user_cart')->withPivot('quantity', 'days');
+        return $this->belongsToMany(Product::class, 'user_cart')->withPivot('quantity', 'days', 'white_label_id');
     }
 
     public function getFullname()
@@ -51,5 +51,16 @@ class User extends Authenticatable
     public function getAvatar()
     {
         return 'https://www.gravatar.com/avatar/' . md5($this->email);
+    }
+    public function whiteLabel()
+    {
+        return $this->belongsTo(WhiteLabel::class);
+    }
+    public function scopeForUser($query, $user)
+    {
+        if ($user->white_label_id === null) {
+            return $query;
+        }
+        return $query->where('white_label_id', $user->white_label_id);
     }
 }

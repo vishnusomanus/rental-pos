@@ -27,6 +27,12 @@
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
+                    <a href="{{ route('customers.index') }}" class="nav-link {{ activeSegment('customers') }}">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>{{ __('customer.title') }}</p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview">
                     <a href="{{ route('cart.index') }}" class="nav-link {{ activeSegment('cart') }}">
                         <i class="nav-icon fas fa-store"></i>
                         <p>{{ __('cart.title') }}</p>
@@ -38,24 +44,28 @@
                         <p>{{ __('order.title') }}</p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview">
-                    <a href="{{ route('orders.pending') }}" class="nav-link {{ activeSegment('pending') }}">
-                        <i class="nav-icon fas fa-clock-rotate-left"></i>
-                        <p>Pending Orders</p>
-                    </a>
-                </li>
-                <li class="nav-item has-treeview">
-                    <a href="{{ route('customers.index') }}" class="nav-link {{ activeSegment('customers') }}">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>{{ __('customer.title') }}</p>
-                    </a>
-                </li>
+                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                    <li class="nav-item has-treeview">
+                        <a href="{{ route('orders.pending') }}" class="nav-link {{ activeSegment('pending') }}">
+                            <i class="nav-icon fas fa-clock-rotate-left"></i>
+                            <p>Pending Orders</p>
+                        </a>
+                    </li>
+                    <li class="nav-item has-treeview">
+                        <a href="{{ route('users.index') }}" class="nav-link {{ activeSegment('users') }}">
+                            <i class="nav-icon fas fa-users-gear"></i>
+                            <p>Users</p>
+                        </a>
+                    </li>
+                @endif
+                @if(auth()->user()->role === 'admin')
                 <li class="nav-item has-treeview">
                     <a href="{{ route('settings.index') }}" class="nav-link {{ activeSegment('settings') }}">
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>{{ __('settings.title') }}</p>
                     </a>
                 </li>
+                @endif
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="document.getElementById('logout-form').submit()">
                         <i class="nav-icon fas fa-sign-out-alt"></i>
