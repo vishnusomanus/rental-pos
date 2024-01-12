@@ -25,8 +25,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $orders = Order::with(['items', 'payments'])->get();
-        $customers_count = Customer::count();
+        $user = auth()->user();
+        $orders = Order::forUser($user)->with(['items', 'payments'])->get();
+        $customers_count = Customer::forUser($user)->count();
 
         return view('home', [
             'orders_count' => $orders->count(),

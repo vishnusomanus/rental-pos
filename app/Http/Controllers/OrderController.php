@@ -45,12 +45,12 @@ class OrderController extends Controller
             $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
         }
         
-        $orders = Order::forUser($user)
-        // ->query()
+        $orders = Order::query()
         ->join(DB::raw('(SELECT order_id, SUM(price) AS total_price FROM order_items GROUP BY order_id) AS oi'), 'orders.id', '=', 'oi.order_id')
         ->join(DB::raw('(SELECT order_id, SUM(amount) AS total_paid FROM payments GROUP BY order_id) AS p'), 'orders.id', '=', 'p.order_id')
         ->select('orders.*', 'oi.total_price', 'p.total_paid')
         ->whereRaw('p.total_paid = 0 OR p.total_paid < oi.total_price')
+        ->forUser($user)
         ->paginate(config('settings.pagination'));
 
 
