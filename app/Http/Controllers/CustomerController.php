@@ -45,7 +45,7 @@ class CustomerController extends Controller
      */
     public function store(CustomerStoreRequest $request)
     {
-        $avatar_path = '';
+        $avatar_path = ''; 
 
         if ($request->hasFile('avatar')) {
             $avatar_path = $request->file('avatar')->store('customers', 'public');
