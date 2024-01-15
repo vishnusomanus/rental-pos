@@ -26,6 +26,17 @@ class ProductSeeder extends Seeder
                 'user_id' => 1,
                 'white_label_id' => 1,
             ]);
+            Product::create([
+                'name' => Str::random(10),
+                'description' => Str::random(50),
+                'image' => '',
+                'barcode' => Str::random(8),
+                'price' => rand(100, 1000) / 10.0,
+                'quantity' => rand(1, 100),
+                'status' => 1,
+                'user_id' => 1,
+                'white_label_id' => 2,
+            ]);
         }
     }
 }

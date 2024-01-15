@@ -17,6 +17,9 @@ class SettingsSeeder extends Seeder
             ['key' => 'app_name', 'value' => 'POS', 'white_label_id' => 1],
             ['key' => 'currency_symbol', 'value' => '₹', 'white_label_id' => 1],
             ['key' => 'pagination', 'value' => '20', 'white_label_id' => 1],
+            ['key' => 'app_name', 'value' => 'POS', 'white_label_id' => 2],
+            ['key' => 'currency_symbol', 'value' => '₹', 'white_label_id' => 2],
+            ['key' => 'pagination', 'value' => '20', 'white_label_id' => 2],
         ];
 
         foreach ($data as $value) {

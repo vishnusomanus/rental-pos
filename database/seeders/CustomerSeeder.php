@@ -23,5 +23,16 @@ class CustomerSeeder extends Seeder
             'user_id' => 1,
             'white_label_id' => 1,
         ]);
+
+        Customer::create([
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'phone' => '1234567890',
+            'address' => '123 Main St',
+            'avatar' => '',
+            'user_id' => 1,
+            'white_label_id' => 2,
+        ]);
     }
 }
