@@ -20,9 +20,9 @@ class WhiteLabelsTableSeeder extends Seeder
                 'url' => 'http://localhost'
             ],
             [
-                'domain' => 'pos.local',
-                'description' => 'localhost hostname',
-                'url' => 'http://pos.local'
+                'domain' => 'dev.vishnusoman.com',
+                'description' => 'Live',
+                'url' => 'http://dev.vishnusoman.com'
             ],
         ];
 
