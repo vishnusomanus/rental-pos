@@ -18,12 +18,14 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->string('barcode')->unique();
+            $table->string('barcode');
             $table->decimal('price', 8, 2);
             $table->boolean('status')->default(true);
             $table->foreignId('user_id');
             $table->foreignId('white_label_id');
             $table->timestamps();
+
+            $table->unique(['barcode', 'white_label_id']);
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('white_label_id')->references('id')->on('white_labels')->onDelete('cascade');

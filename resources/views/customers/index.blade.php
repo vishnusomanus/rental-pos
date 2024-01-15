@@ -11,42 +11,44 @@
 @section('content')
 <div class="card">
     <div class="card-body">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{ __('customer.ID') }}</th>
-                    <th>{{ __('customer.Avatar') }}</th>
-                    <th>{{ __('customer.First_Name') }}</th>
-                    <th>{{ __('customer.Last_Name') }}</th>
-                    <th>{{ __('customer.Email') }}</th>
-                    <th>{{ __('customer.Phone') }}</th>
-                    <th>{{ __('customer.Address') }}</th>
-                    <th>{{ __('common.Created_At') }}</th>
-                    <th>{{ __('customer.Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($customers as $customer)
-                <tr>
-                    <td>{{$customer->id}}</td>
-                    <td>
-                        <img width="50" src="{{$customer->getAvatarUrl()}}" alt="">
-                    </td>
-                    <td>{{$customer->first_name}}</td>
-                    <td>{{$customer->last_name}}</td>
-                    <td>{{$customer->email}}</td>
-                    <td>{{$customer->phone}}</td>
-                    <td>{{$customer->address}}</td>
-                    <td>{{$customer->created_at}}</td>
-                    <td style="width: 100px;">
-                        <a href="{{ route('customers.edit', $customer) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                        <button class="btn btn-danger btn-delete btn-sm" data-url="{{route('customers.destroy', $customer)}}"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        {{ $customers->render() }}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{{ __('customer.ID') }}</th>
+                        <th>{{ __('customer.Avatar') }}</th>
+                        <th>{{ __('customer.First_Name') }}</th>
+                        <th>{{ __('customer.Last_Name') }}</th>
+                        <th>{{ __('customer.Email') }}</th>
+                        <th>{{ __('customer.Phone') }}</th>
+                        <th>{{ __('customer.Address') }}</th>
+                        <th>{{ __('common.Created_At') }}</th>
+                        <th>{{ __('customer.Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($customers as $customer)
+                    <tr>
+                        <td>{{$customer->id}}</td>
+                        <td>
+                            <img width="50" src="{{$customer->getAvatarUrl()}}" alt="">
+                        </td>
+                        <td>{{$customer->first_name}}</td>
+                        <td>{{$customer->last_name}}</td>
+                        <td>{{$customer->email}}</td>
+                        <td>{{$customer->phone}}</td>
+                        <td>{{$customer->address}}</td>
+                        <td>{{$customer->created_at}}</td>
+                        <td style="width: 100px;">
+                            <a href="{{ route('customers.edit', $customer) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-danger btn-delete btn-sm" data-url="{{route('customers.destroy', $customer)}}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            {{ $customers->render() }}
+        </div>
     </div>
 </div>
 @endsection

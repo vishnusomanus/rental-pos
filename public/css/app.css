@@ -17079,6 +17079,7 @@ a.text-dark:focus {
 
 .user-cart .card {
   height: 400px;
+  overflow-y: scroll;
 }
 
 .user-cart .qty ,

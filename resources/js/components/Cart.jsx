@@ -244,7 +244,7 @@ class Cart extends Component {
         const { cart, products, customers, barcode, translations} = this.state;
         return (
             <div className="row">
-                <div className="col-md-6 col-lg-6">
+                <div className="col-md-6 col-lg-6 order-md-0 order-sm-1">
                     <div className="row mb-2">
                         <div className="col">
                             <form onSubmit={this.handleScanBarcode}>
