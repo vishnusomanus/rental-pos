@@ -39,11 +39,20 @@
                 @enderror
             </div>
 
-
             <div class="form-group">
                 <label for="pagination">Items per page</label>
                 <input type="text" name="pagination" class="form-control @error('pagination') is-invalid @enderror" id="pagination" placeholder="Items per page" value="{{ old('pagination', config('settings.pagination')) }}">
-                @error('app_pagination')
+                @error('pagination')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="mobile">Mobile</label>
+                <input type="text" name="mobile" class="form-control @error('mobile') is-invalid @enderror" id="mobile" placeholder="Mobile Number" value="{{ old('mobile', config('settings.mobile')) }}">
+                @error('mobile')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>

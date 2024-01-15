@@ -1,26 +1,29 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-{{$order}}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans&display=swap">
+
+
 <div class=" invoice">
     <div class="header">
         <div class="logo">
-            <img src="data:image/png;base64,{{ $base64Image }}" width="60">
+            <!-- <img src="data:image/png;base64,{{ $base64Image }}" width="60"> -->
             <h3>POS</h3>
             <div class="invo">INVOICE</div>
         </div>
         <div class="order_data">
-            <strong>Invoice Number:</strong> 123 <br/>
-            <strong>Date:</strong> 123 <br/>
+            <strong>Invoice Number:</strong> #{{$id}} <br/>
+            <strong>Date:</strong> {{$order->created_at}} <br/>
         </div>
     </div>
     <div class="clearfix"></div>
     <div class="address_area">
         <div class="address_each">
             <strong>Bill From:</strong><br/>
-            Company Name <br/>
-            Company address,  Company Name <br/>
-            +91 9567774130
+            {{config('settings.app_name')}}<br/>
+            {{config('settings.app_address')}} <br/>
+            +91 {{config('settings.mobile')}}
         </div>
         <div class="address_each">
             <strong>Bill To:</strong><br/>
@@ -43,19 +46,46 @@
             <tbody>
                 @foreach ($order->items as $item)
                     <tr>
+                    <tbody>
+                    <tr>
                         <td>{{ $item->product->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->days }}</td>
-                        <td>{{config('settings.currency_symbol')}}{{ $item->product->price }}</td>
-                        <td>{{config('settings.currency_symbol')}}{{ $item->product->price * $item->quantity * $item->days}}</td>
+                        <td style="font-family: DejaVu Sans;">{{config('settings.currency_symbol')}}{{ $item->product->price }}</td>
+                        <td style="font-family: DejaVu Sans;">{{config('settings.currency_symbol')}}{{ $item->product->price * $item->quantity * $item->days}}</td>
+                    </tr>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
+    <div class="summary">
+        <table>
+            <tr>
+                <td>Subtotal:</td>
+                <td style="font-family: 'DejaVu Sans';">{{ config('settings.currency_symbol') }}{{$order->formattedTotal()}}</td>
+            </tr>
+            <!-- <tr>
+                <td>Tax:</td>
+                <td style="font-family: 'DejaVu Sans';">{{ config('settings.currency_symbol') }}0</td>
+            </tr>
+            <tr>
+                <td>Discount:</td>
+                <td style="font-family: 'DejaVu Sans';">{{ config('settings.currency_symbol') }}0</td>
+            </tr> -->
+            <tr>
+                <td>Paid:</td>
+                <td style="font-family: 'DejaVu Sans';">{{ config('settings.currency_symbol') }}{{$order->formattedReceivedAmount()}}</td>
+            </tr>
+            <tr>
+                <td>Total:</td>
+                <td style="font-family: 'DejaVu Sans'; font-weight: bold; font-size: 18px;">{{ config('settings.currency_symbol') }}{{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
+            </tr>
+        </table>
+    </div>
 </div>
 
-<h1>Invoice for Order ID</h1>
+
 <style>
     .logo h3, .logo img {
         display: inline-block;
@@ -130,5 +160,19 @@
     }
     thead {
         background: #b5c4cb;
+    }
+    .summary {
+        float: right;
+        width: 350px;
+        margin-top: 20px;
+    }
+    .summary table {
+        border-collapse: collapse;
+    }
+    .summary tr {
+        border: 1px solid;
+    }
+    .summary td {
+        padding: 3px 12px;
     }
 </style>

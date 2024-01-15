@@ -16,5 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(WhiteLabelsTableSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(SettingsSeeder::class);
+        $this->call(ProductSeeder::class);
+        $this->call(CustomerSeeder::class);
     }
 }

@@ -103,16 +103,17 @@ class OrderController extends Controller
     }
     public function invoice( Request $request)
     {
-        $order = Order::findOrFail($request->id);
+        $id = $request->id;
+        $order = Order::findOrFail($id);
         $order->load('customer', 'items.product');
         $imagePath = public_path('images/logo.png');
         $base64Image = base64_encode(file_get_contents($imagePath));
-        //return view('orders.invoice', compact('order', 'base64Image'));
+        //return view('orders.invoice', compact('id', 'order', 'base64Image'));
         
         if ($request->headers->get('referer') === url('/admin/orders')) {
             $dompdf = new Dompdf();
             
-            $html = view('orders.invoice', compact('order', 'base64Image'))->render();
+            $html = view('orders.invoice', compact('id', 'order', 'base64Image'))->render();
             
             $dompdf->loadHtml($html);
             $dompdf->render();

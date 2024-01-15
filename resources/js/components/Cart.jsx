@@ -266,7 +266,6 @@ class Cart extends Component {
                                     title="Select Customer"
                                     data-size="5" // Set the number of visible options
                                 >
-                                    <option value="">General Customer</option>
                                     {customers.map((cus) => (
                                         <option key={cus.id} value={cus.id}>
                                             {`${cus.first_name} ${cus.last_name}`}
@@ -362,7 +361,7 @@ class Cart extends Component {
                                 type="button"
                                 className="btn btn-danger btn-block"
                                 onClick={this.handleEmptyCart}
-                                disabled={!cart.length}
+                                disabled={!cart.length || !this.state.customer_id}
                             >
                                 {translations["cancel"]}
                             </button>
@@ -371,7 +370,7 @@ class Cart extends Component {
                             <button
                                 type="button"
                                 className="btn btn-primary btn-block"
-                                disabled={!cart.length}
+                                disabled={!cart.length || !this.state.customer_id}
                                 onClick={this.handleClickSubmit}
                             >
                                 {translations["checkout"]}
@@ -396,7 +395,7 @@ class Cart extends Component {
                                 key={p.id}
                                 className="item"
                             >
-                                <img src={p.image_url} alt="" />
+                                <img src={p.image_url == '/storage/' ? '/images/default.png' : p.image_url} alt="" />
                                 <h5
                                     style={
                                         window.APP.warning_quantity > p.quantity
