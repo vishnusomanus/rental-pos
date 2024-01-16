@@ -12,59 +12,86 @@ use Illuminate\Support\Facades\Response;
 
 class OrderController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         $user = auth()->user();
         $orders = new Order();
-        if($request->start_date) {
-            $orders = $orders->where('created_at', '>=', $request->start_date);
-        }
-        if($request->end_date) {
-            $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
-        }
-        $orders = $orders->forUser($user)->with(['items', 'payments', 'customer'])->latest()->paginate(config('settings.pagination'));
-
-        $total = $orders->map(function($i) {
-            return $i->total();
-        })->sum();
-        $receivedAmount = $orders->map(function($i) {
-            return $i->receivedAmount();
-        })->sum();
-
-        return view('orders.index', compact('orders', 'total', 'receivedAmount'));
-    }
-
-    public function pending(Request $request) {
-        $user = auth()->user();
-        $orders = new Order();
-        
+    
         if ($request->start_date) {
             $orders = $orders->where('created_at', '>=', $request->start_date);
         }
-        
+    
         if ($request->end_date) {
             $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
         }
         
-        $orders = Order::query()
-        ->join(DB::raw('(SELECT order_id, SUM(price) AS total_price FROM order_items GROUP BY order_id) AS oi'), 'orders.id', '=', 'oi.order_id')
-        ->join(DB::raw('(SELECT order_id, SUM(amount) AS total_paid FROM payments GROUP BY order_id) AS p'), 'orders.id', '=', 'p.order_id')
-        ->select('orders.*', 'oi.total_price', 'p.total_paid')
-        ->whereRaw('p.total_paid = 0 OR p.total_paid < oi.total_price')
-        ->forUser($user)
-        ->paginate(config('settings.pagination'));
-
-
+        if ($request->search) {
+            $orders = $orders->whereHas('customer', function ($query) use ($request) {
+                $query->where(function ($innerQuery) use ($request) {
+                    $innerQuery->where('first_name', 'LIKE', "%{$request->search}%")
+                        ->orWhere('last_name', 'LIKE', "%{$request->search}%");
+                });
+            });
+        }
     
-        $total = $orders->map(function($i) {
+        $orders = $orders->forUser($user)->with(['items', 'payments', 'customer'])
+            ->latest()->paginate(config('settings.pagination'))
+            ->appends(request()->except('page'));
+    
+        $total = $orders->map(function ($i) {
             return $i->total();
         })->sum();
+    
+        $receivedAmount = $orders->map(function ($i) {
+            return $i->receivedAmount();
+        })->sum();
+    
+        return view('orders.index', compact('orders', 'total', 'receivedAmount'));
+    }
+
+    public function pending(Request $request)
+    {
+        $user = auth()->user();
+        $orders = new Order();
+    
+        if ($request->start_date) {
+            $orders = $orders->where('created_at', '>=', $request->start_date);
+        }
+    
+        if ($request->end_date) {
+            $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
+        }
         
-        $receivedAmount = $orders->map(function($i) {
+        if ($request->search) {
+            $orders = $orders->whereHas('customer', function ($query) use ($request) {
+                $query->where(function ($innerQuery) use ($request) {
+                    $innerQuery->where('first_name', 'LIKE', "%{$request->search}%")
+                        ->orWhere('last_name', 'LIKE', "%{$request->search}%");
+                });
+            });
+        }
+    
+        $orders = Order::query()
+            ->join(DB::raw('(SELECT order_id, SUM(price) AS total_price FROM order_items GROUP BY order_id) AS oi'), 'orders.id', '=', 'oi.order_id')
+            ->join(DB::raw('(SELECT order_id, SUM(amount) AS total_paid FROM payments GROUP BY order_id) AS p'), 'orders.id', '=', 'p.order_id')
+            ->select('orders.*', 'oi.total_price', 'p.total_paid')
+            ->whereRaw('p.total_paid = 0 OR p.total_paid < oi.total_price')
+            ->forUser($user)
+            ->with(['items', 'payments', 'customer'])
+            ->paginate(config('settings.pagination'))
+            ->appends(request()->except('page'));
+    
+        $total = $orders->map(function ($i) {
+            return $i->total();
+        })->sum();
+    
+        $receivedAmount = $orders->map(function ($i) {
             return $i->receivedAmount();
         })->sum();
     
         return view('orders.pending', compact('orders', 'total', 'receivedAmount'));
     }
+    
     
 
     public function store(OrderStoreRequest $request)
@@ -110,7 +137,7 @@ class OrderController extends Controller
         $base64Image = base64_encode(file_get_contents($imagePath));
         //return view('orders.invoice', compact('id', 'order', 'base64Image'));
         
-        if ($request->headers->get('referer') === url('/admin/orders')) {
+        if (strpos($request->headers->get('referer'), '/admin/orders') !== false) {
             $dompdf = new Dompdf();
             
             $html = view('orders.invoice', compact('id', 'order', 'base64Image'))->render();

@@ -8,10 +8,20 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
-        $users = User::forUser($user)->latest()->paginate(config('settings.pagination'));
+        $users = User::forUser($user);
+        
+        if ($request->search) {
+            $users = $users->where(function ($query) use ($request) {
+                $query->where('first_name', 'LIKE', "%{$request->search}%")
+                    ->orWhere('last_name', 'LIKE', "%{$request->search}%");
+            });
+        }
+    
+        $paginationConfig = config('settings.pagination');
+        $users = $users->latest()->paginate($paginationConfig)->appends(request()->except('page'));
         return view('users.index', compact('users'));
     }
 

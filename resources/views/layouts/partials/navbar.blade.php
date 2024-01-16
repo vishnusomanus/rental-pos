@@ -8,14 +8,25 @@
     </ul>
     
  <!-- Sidebar user (optional) -->
-    <div class="navbar-nav ml-auto">
-        <div class="image">
+  <div class="navbar-nav ml-auto">
+    <div class="image dropdown">
+        <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2 img-sm" alt="User Image">
-        </div>
-        <div class="info btn btn-sm">
-            <a href="#" class="d-block">{{ auth()->user()->getFullname() }}</a>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+          <span class="dropdown-item-text">
+            {{ auth()->user()->getFullname() }} <br>
+            <small>{{ auth()->user()->role }}</small>
+          </span>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" onclick="document.getElementById('logout-user').submit()">Logout</a>
+          <form action="{{route('logout')}}" method="POST" id="logout-user">
+            @csrf
+        </form>
         </div>
     </div>
+  </div>
+
     <!-- SEARCH FORM -->
     {{--
     <form class="form-inline ml-3">

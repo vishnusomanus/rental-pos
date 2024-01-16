@@ -11,6 +11,20 @@
 @section('content')
 <div class="card">
     <div class="card-body">
+        <div class="row mb-2">
+            <div class="col-md-7">
+                <form class="form-inline" action="{{ route('orders.index') }}">
+                    <div class="input-group input-group-md">
+                        <input class="form-control form-control-navbar" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request('search') }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-navbar" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table">
                 <thead>

@@ -15,15 +15,25 @@ class CustomerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $user = auth()->user();
         if (request()->wantsJson()) {
             return response(
-                Customer::all()
+                Customer::forUser($user)->get()
             );
         }
-        $user = auth()->user();
-        $customers = Customer::forUser($user)->latest()->paginate(config('settings.pagination'));
+
+        $customers = Customer::forUser($user);
+        if ($request->search) {
+            $customers = $customers->where(function ($query) use ($request) {
+                $query->where('first_name', 'LIKE', "%{$request->search}%")
+                    ->orWhere('last_name', 'LIKE', "%{$request->search}%");
+            });
+        }
+        
+        $paginationConfig = config('settings.pagination');
+        $customers = $customers->latest()->paginate($paginationConfig)->appends(request()->except('page'));
         return view('customers.index')->with('customers', $customers);
     }
 

@@ -66,3 +66,6 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
     border: 1px solid #ced4da;
     background: #fff;
 }
+.image.dropdown a#userDropdown::after{
+    display: none;
+}
