@@ -13,7 +13,7 @@
     <div class="card-body">
         <div class="row mb-2">
             <div class="col-md-7">
-                <form class="form-inline" action="{{ route('orders.index') }}">
+                <form class="form-inline" action="{{ route('customers.index') }}">
                     <div class="input-group input-group-md">
                         <input class="form-control form-control-navbar" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request('search') }}">
                         <div class="input-group-append">
