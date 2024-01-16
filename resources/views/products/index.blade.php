@@ -15,7 +15,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>{{ __('product.ID') }}</th>
                         <th>{{ __('product.Name') }}</th>
                         <th>{{ __('product.Image') }}</th>
                         <th>{{ __('product.Barcode') }}</th>
@@ -30,7 +29,6 @@
                 <tbody>
                     @foreach ($products as $product)
                     <tr>
-                        <td>{{$product->id}}</td>
                         <td>{{$product->name}}</td>
                         <td><img class="product-img" src="{{ Storage::url($product->image) }}" alt=""></td>
                         <td>{{$product->barcode}}</td>

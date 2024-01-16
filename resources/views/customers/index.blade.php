@@ -15,7 +15,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>{{ __('customer.ID') }}</th>
                         <th>{{ __('customer.Avatar') }}</th>
                         <th>{{ __('customer.First_Name') }}</th>
                         <th>{{ __('customer.Last_Name') }}</th>
@@ -29,7 +28,6 @@
                 <tbody>
                     @foreach ($customers as $customer)
                     <tr>
-                        <td>{{$customer->id}}</td>
                         <td>
                             <img width="50" src="{{$customer->getAvatarUrl()}}" alt="">
                         </td>

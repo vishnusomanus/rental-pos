@@ -31,7 +31,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>{{ __('order.ID') }}</th>
                         <th>{{ __('order.Customer_Name') }}</th>
                         <th>{{ __('order.Total') }}</th>
                         <th>{{ __('order.Received_Amount') }}</th>
@@ -44,7 +43,6 @@
                 <tbody>
                     @foreach ($orders as $order)
                     <tr>
-                        <td>{{$order->id}}</td>
                         <td>{{$order->getCustomerName()}}</td>
                         <td>{{ config('settings.currency_symbol') }} {{$order->formattedTotal()}}</td>
                         <td>{{ config('settings.currency_symbol') }} {{$order->formattedReceivedAmount()}}</td>

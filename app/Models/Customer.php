@@ -30,4 +30,15 @@ class Customer extends Model
     {
         return Storage::url($this->avatar);
     }
+    public function scopeTopCustomers($query, $user)
+    {
+        return $query->forUser($user)->select('id', 'first_name', 'last_name')
+            ->withCount('orders')
+            ->orderByDesc('orders_count')
+            ->limit(5);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

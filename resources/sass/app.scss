@@ -25,6 +25,7 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 .user-cart {
     .card {
         height: 400px;
+        overflow-y: scroll;
     }
     .qty {
         width: 45px;

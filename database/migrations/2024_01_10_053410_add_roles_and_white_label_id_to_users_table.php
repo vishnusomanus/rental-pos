@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('white_label_id')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
+
+            $table->unique(['email', 'white_label_id']);
+
             $table->foreign('white_label_id')->references('id')->on('white_labels')->onDelete('cascade');
         });
     }

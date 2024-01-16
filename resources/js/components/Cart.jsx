@@ -119,6 +119,13 @@ class Cart extends Component {
             .then((res) => {})
             .catch((err) => {
                 Swal.fire("Error!", err.response.data.message, "error");
+                const updatedCart = this.state.cart.map((c) => {
+                    if (c.id === product_id) {
+                        c.pivot.quantity = c.quantity;
+                    }
+                    return c;
+                });
+                this.setState({ cart: updatedCart });
             });
     }
     
