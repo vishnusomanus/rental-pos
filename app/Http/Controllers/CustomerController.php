@@ -7,6 +7,9 @@ use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use League\Csv\Writer;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
 
 class CustomerController extends Controller
 {
@@ -142,5 +145,53 @@ class CustomerController extends Controller
        return response()->json([
            'success' => true
        ]);
+    }
+
+    public function exportCsv()
+    {
+        $customers = $this->getFilteredCustomers();
+        
+        $csv = Writer::createFromString('');
+        $csv->insertOne(['First Name', 'Last Name', 'Email', 'Phone', 'Address']);
+        
+        foreach ($customers as $customer) {
+            $csv->insertOne([$customer->first_name, $customer->last_name, $customer->email, $customer->phone, $customer->address]);
+        }
+        
+        $fileName = 'customers_' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ];
+        
+        return response()->streamDownload(function () use ($csv) {
+            echo $csv->getContent();
+        }, $fileName, $headers);
+    }
+
+    public function exportPdf()
+    {
+        $customers = $this->getFilteredCustomers();
+        
+        $html = View::make('customers.export', ['customers' => $customers])->render();
+        
+        $pdf = new Dompdf();
+        $pdf->loadHtml($html);
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+        
+        $fileName = 'customers_' . date('Y-m-d') . '.pdf';
+        
+        return $pdf->stream($fileName);
+    }
+    private function getFilteredCustomers()
+    {
+        $user = auth()->user();
+        $customers = Customer::forUser($user);
+        
+        if (request('search')) {
+            $customers = $customers->where('first_name', 'LIKE', "%".request('search')."%");
+        }
+        return $customers->latest()->get();
     }
 }

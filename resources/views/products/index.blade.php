@@ -22,6 +22,8 @@
                             </button>
                         </div>
                     </div>
+                    <a href="{{ route('products.export.csv') }}" class="btn btn-sm btn-secondary mt-2">CSV Export</a>
+                    <a href="{{ route('products.export.pdf') }}" class="btn btn-sm btn-secondary mt-2 ml-2">PDF Export</a>
                 </form>
             </div>
         </div>

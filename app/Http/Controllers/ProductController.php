@@ -8,6 +8,10 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use League\Csv\Writer;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
+
 
 class ProductController extends Controller
 {
@@ -151,4 +155,70 @@ class ProductController extends Controller
             'success' => true
         ]);
     }
+    public function exportCsv()
+    {
+        $products = $this->getFilteredProducts();
+        
+        $csv = Writer::createFromString('');
+        $csv->insertOne([
+            __('product.Name'),
+            __('product.Image'),
+            __('product.Barcode'),
+            __('product.Price'),
+            __('product.Quantity'),
+            __('product.Status'),
+            __('product.Created_At'),
+            __('product.Updated_At'),
+        ]);
+        
+        foreach ($products as $product) {
+            $csv->insertOne([
+                $product->name,
+                asset(Storage::url($product->image)),
+                $product->barcode,
+                $product->price,
+                $product->quantity,
+                $product->status ? __('common.Active') : __('common.Inactive'),
+                $product->created_at,
+                $product->updated_at,
+            ]);
+        }
+        
+        $fileName = 'products_' . date('Y-m-d') . '.csv';
+        $csv->output($fileName);
+        die;
+    }
+
+    public function exportPdf()
+    {
+        $products = $this->getFilteredProducts();
+        
+        $html = View::make('products.export', ['products' => $products])->render();
+        
+        $pdf = new Dompdf();
+        $pdf->loadHtml($html);
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+        
+        $fileName = 'products_' . date('Y-m-d') . '.pdf';
+        return $pdf->stream($fileName);
+    }
+    
+
+    private function getFilteredProducts()
+    {
+        $user = auth()->user();
+        $products = Product::forUser($user);
+        
+        if (request('search')) {
+            $products = $products->where('name', 'LIKE', "%".request('search')."%");
+        }
+        
+        if (request('active')) {
+            $products = $products->where('status', 1);
+        }
+        
+        return $products->latest()->get();
+    }
+
 }

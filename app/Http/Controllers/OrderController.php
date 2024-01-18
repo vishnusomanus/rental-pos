@@ -9,34 +9,15 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Response;
+use League\Csv\Writer;
 
 class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $orders = new Order();
-    
-        if ($request->start_date) {
-            $orders = $orders->where('created_at', '>=', $request->start_date);
-        }
-    
-        if ($request->end_date) {
-            $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
-        }
-        
-        if ($request->search) {
-            $orders = $orders->whereHas('customer', function ($query) use ($request) {
-                $query->where(function ($innerQuery) use ($request) {
-                    $innerQuery->where('first_name', 'LIKE', "%{$request->search}%")
-                        ->orWhere('last_name', 'LIKE', "%{$request->search}%");
-                });
-            });
-        }
-    
-        $orders = $orders->forUser($user)->with(['items', 'payments', 'customer'])
-            ->latest()->paginate(config('settings.pagination'))
-            ->appends(request()->except('page'));
+        $orders = $this->getFilteredOrders()->with(['items', 'payments', 'customer'])
+        ->latest()->paginate(config('settings.pagination'))
+        ->appends(request()->except('page'));
     
         $total = $orders->map(function ($i) {
             return $i->total();
@@ -169,4 +150,89 @@ class OrderController extends Controller
         }
         return redirect()->route('orders.pending')->with('success', "Order updated!");
     }
+
+    public function exportPDF()
+    {
+        $orders = $this->getFilteredOrders()->with(['items', 'payments', 'customer'])
+        ->get();
+
+        $total = $orders->map(function ($i) {
+            return $i->total();
+        })->sum();
+    
+        $receivedAmount = $orders->map(function ($i) {
+            return $i->receivedAmount();
+        })->sum();
+        
+        $html = view('orders.export', compact('orders', 'total', 'receivedAmount'))->render();
+    
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        $fileName = 'orders_' . date('Y-m-d') . '.pdf';
+        return $dompdf->stream($fileName);
+    }
+    
+    public function exportCSV()
+    {
+        $orders = $this->getFilteredOrders()->with(['items', 'payments', 'customer'])->get();
+        
+        $csv = Writer::createFromString('');
+    
+        $csv->insertOne([
+            __('order.Customer_Name'),
+            __('order.Total'),
+            __('order.Received_Amount'),
+            // __('order.Status'),
+            __('order.To_Pay'),
+            __('order.Created_At')
+        ]);
+    
+        foreach ($orders as $order) {
+            $csv->insertOne([
+                $order->getCustomerName(),
+                $order->formattedTotal(),
+                $order->formattedReceivedAmount(),
+                // $order->getStatus(),
+                number_format($order->balance(), 2),
+                $order->created_at
+            ]);
+        }
+        $fileName = 'orders_' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ];
+        
+        return response()->streamDownload(function () use ($csv) {
+            echo $csv->getContent();
+        }, $fileName, $headers);
+    }
+
+    private function getFilteredOrders()
+    {
+        $user = auth()->user();
+        $orders = Order::forUser($user);
+    
+        if (request()->has('start_date')) {
+            $orders = $orders->where('created_at', '>=', request('start_date'));
+        }
+    
+        if (request()->has('end_date')) {
+            $orders = $orders->where('created_at', '<=', request('end_date') . ' 23:59:59');
+        }
+            
+        if (request()->has('search')) {
+            $search = request('search');
+            $orders = $orders->whereHas('customer', function ($query) use ($search) {
+                $query->where('first_name', 'LIKE', "%{$search}%")
+                    ->orWhere('last_name', 'LIKE', "%{$search}%");
+            });
+        }
+    
+        return $orders;
+    }
+    
+    
 }

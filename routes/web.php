@@ -21,9 +21,19 @@ Route::prefix('admin')->middleware(['auth', 'restrict.login'])->group(function (
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
+
     Route::resource('products', ProductController::class);
+    Route::get('/products/export/csv', [ProductController::class, 'exportCsv'])->name('products.export.csv');
+    Route::get('/products/export/pdf', [ProductController::class, 'exportPdf'])->name('products.export.pdf');
+
     Route::resource('customers', CustomerController::class);
+    Route::get('/customers/export/csv', [CustomerController::class, 'exportCsv'])->name('customers.export.csv');
+    Route::get('/customers/export/pdf', [CustomerController::class, 'exportPdf'])->name('customers.export.pdf');
+
     Route::resource('orders', OrderController::class);
+    Route::get('/orders/export/pdf', [OrderController::class, 'exportPDF'])->name('orders.export.pdf');
+    Route::get('/orders/export/csv', [OrderController::class, 'exportCSV'])->name('orders.export.csv');
+
     Route::get('/pending', [OrderController::class, 'pending'])->name('orders.pending');
     Route::get('/orders/{id}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
 

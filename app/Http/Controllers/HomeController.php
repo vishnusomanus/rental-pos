@@ -35,32 +35,31 @@ class HomeController extends Controller
 
 
         $weeklyStatistics = [];
-    
-        // Get the start and end date of the current week
-        $startDate = Carbon::now()->startOfWeek();
-        $endDate = Carbon::now()->endOfWeek();
+
+        // Get the start and end date for the last 7 days
+        $startDate = Carbon::now()->subDays(6)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
         
-        // Loop through each day of the week
+        // Loop through each day of the last 7 days
         for ($date = $startDate; $date <= $endDate; $date->addDay()) {
             $dayOfWeek = $date->format('l');
-            
+        
             // Get the total rented amount for the day from the Payment model
             $rentedAmount = Payment::forUser(auth()->user())
                 ->whereDate('created_at', $date)
                 ->sum('amount');
-            
+        
             // Get the total number of products on rent for the day from the OrderItem model
             $productOnRent = OrderItem::whereDate('created_at', $date)
                 ->sum('quantity');
-            
+        
             // Store the daily statistics in the result array
             $weeklyStatistics[$dayOfWeek] = [
                 'rented_amount' => $rentedAmount,
                 'product_on_rent' => $productOnRent,
             ];
         }
-
-
+        
         $mostSellingProducts = Product::mostSelling($user)->get();
 
         $topCustomers = Customer::topCustomers($user)->get();
