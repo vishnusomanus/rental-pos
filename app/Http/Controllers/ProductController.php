@@ -201,7 +201,14 @@ class ProductController extends Controller
         $pdf->render();
         
         $fileName = 'products_' . date('Y-m-d') . '.pdf';
-        return $pdf->stream($fileName);
+        // return $pdf->stream($fileName);
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $fileName . '"');
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $pdf->output();
+        exit;
     }
     
 

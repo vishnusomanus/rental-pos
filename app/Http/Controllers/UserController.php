@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\WhiteLabel;
 use Illuminate\Http\Request;
+use League\Csv\Writer;
+use Dompdf\Dompdf;
 
 class UserController extends Controller
 {
@@ -94,5 +96,53 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully');
+    }
+
+    public function exportCSV()
+    {
+        $users = $this->getFilteredUsers();
+
+        $csv = Writer::createFromString('');
+        $csv->insertOne(['First Name', 'Last Name', 'Email', 'Phone', 'Address']);
+
+        foreach ($users as $user) {
+            $csv->insertOne([$user->first_name, $user->last_name, $user->email, $user->phone, $user->address]);
+        }
+
+        $fileName = 'users_' . date('Y-m-d') . '.csv';
+
+        return response((string) $csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+    }
+
+    public function exportPDF()
+    {
+        $users = $this->getFilteredUsers();
+
+        $html = view('users.export', compact('users'))->render();
+
+        $pdf = new Dompdf();
+        $pdf->loadHtml($html);
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+
+        $fileName = 'users_' . date('Y-m-d') . '.pdf';
+
+        return response($pdf->output())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $fileName . '"');
+    }
+
+    private function getFilteredUsers()
+    {
+        $user = auth()->user();
+        $users = User::forUser($user);
+
+        if (request('search')) {
+            $users = $users->where('first_name', 'LIKE', '%' . request('search') . '%');
+        }
+
+        return $users->latest()->get();
     }
 }

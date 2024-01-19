@@ -171,7 +171,15 @@ class OrderController extends Controller
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
         $fileName = 'orders_' . date('Y-m-d') . '.pdf';
-        return $dompdf->stream($fileName);
+
+        //return $dompdf->stream($fileName);
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $fileName . '"');
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $dompdf->output();
+        exit;
     }
     
     public function exportCSV()

@@ -44,6 +44,9 @@ Route::prefix('admin')->middleware(['auth', 'restrict.login'])->group(function (
     Route::delete('/cart/empty', [CartController::class, 'empty']);
 
     Route::resource('users', UserController::class);
+    Route::get('/users/export/pdf', [UserController::class, 'exportPDF'])->name('users.export.pdf');
+    Route::get('/users/export/csv', [UserController::class, 'exportCSV'])->name('users.export.csv');
+
     Route::resource('white-labels', WhiteLabelController::class);
 
     // Transaltions route for React component
