@@ -36,7 +36,7 @@
                     <li class="nav-item has-treeview">
                         <a href="{{ route('cart.index') }}" class="nav-link {{ activeSegment('cart') }}">
                             <i class="nav-icon fas fa-store"></i>
-                            <p>{{ __('cart.title') }}</p>
+                            <p>Booking Order</p>
                         </a>
                     </li>
                 @endif

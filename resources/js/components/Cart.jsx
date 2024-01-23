@@ -6,6 +6,7 @@ import { sum } from "lodash";
 import $ from 'jquery';
 import 'bootstrap-select/dist/css/bootstrap-select.min.css';
 import 'bootstrap-select/dist/js/bootstrap-select.min.js';
+import QRCodeScanner from './QRCodeScanner'
 
 class Cart extends Component {
     constructor(props) {
@@ -20,6 +21,7 @@ class Cart extends Component {
             customer_proof: "",
             customer_notes: "",
             translations: {}, 
+            showScanner: false,
         };
 
         this.loadCart = this.loadCart.bind(this);
@@ -36,6 +38,8 @@ class Cart extends Component {
         this.setCustomerNotes = this.setCustomerNotes.bind(this);
         this.handleClickSubmit = this.handleClickSubmit.bind(this);
         this.loadTranslations = this.loadTranslations.bind(this);
+
+        this.handleScanComplete = this.handleScanComplete.bind(this);
     }
 
     componentDidMount() {
@@ -57,6 +61,12 @@ class Cart extends Component {
         });
     }
     
+    handleScanComplete(barcode) {
+        console.log("Scanned value:", barcode);
+        this.setState({ showScanner: false });
+        this.setState({ barcode });
+        this.handleScanBarcode(barcode);
+    }
 
     loadCustomers() {
         axios.get(`/admin/customers`).then((res) => {
@@ -74,10 +84,10 @@ class Cart extends Component {
         });
     }
 
-    handleOnChangeBarcode(event) {
+    handleOnChangeBarcode = (event) => {
         const barcode = event.target.value;
-        console.log(barcode);
         this.setState({ barcode });
+        this.handleScanBarcode();
     }
 
     loadCart() {
@@ -87,9 +97,8 @@ class Cart extends Component {
         });
     }
 
-    handleScanBarcode(event) {
-        event.preventDefault();
-        const { barcode } = this.state;
+    handleScanBarcode = (barcode) => {
+        console.log('test', barcode);
         if (!!barcode) {
             axios
                 .post("/admin/cart", { barcode })
@@ -248,9 +257,17 @@ class Cart extends Component {
     }
     render() {
         $('.selectpicker').selectpicker('refresh');
-        const { cart, products, customers, barcode, translations} = this.state;
+        const { cart, products, customers, barcode, translations, showScanner} = this.state;
         return (
             <div className="row">
+                {!showScanner && (
+                    <button onClick={() => this.setState({ showScanner: true })}>
+                    Open Scanner
+                    </button>
+                )}
+                {showScanner && (
+                    <QRCodeScanner onScanComplete={this.handleScanComplete} />
+                )}
                 <div className="col-md-6 col-lg-6 order-md-0 order-sm-1">
                     <div className="row mb-2">
                         <div className="col">
