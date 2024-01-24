@@ -28,7 +28,7 @@ const QRCodeScanner = ({ onScanComplete }) => {
       }
       qrCodeScannerRef.current.start(
         { facingMode: "environment" },
-        { qrbox: 500 },
+        { qrbox: 250 },
         qrCodeSuccessCallback,
         qrCodeErrorCallback
       );

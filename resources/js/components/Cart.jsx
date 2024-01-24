@@ -27,6 +27,7 @@ class Cart extends Component {
         this.loadCart = this.loadCart.bind(this);
         this.handleOnChangeBarcode = this.handleOnChangeBarcode.bind(this);
         this.handleScanBarcode = this.handleScanBarcode.bind(this);
+        this.handleScanBarcodeForm = this.handleScanBarcodeForm.bind(this);
         this.handleChangeQty = this.handleChangeQty.bind(this);
         this.handleEmptyCart = this.handleEmptyCart.bind(this);
 
@@ -87,7 +88,6 @@ class Cart extends Component {
     handleOnChangeBarcode = (event) => {
         const barcode = event.target.value;
         this.setState({ barcode });
-        this.handleScanBarcode();
     }
 
     loadCart() {
@@ -97,8 +97,13 @@ class Cart extends Component {
         });
     }
 
+    handleScanBarcodeForm = (event) => {
+        event.preventDefault();
+        const { barcode } = this.state;
+        this.handleScanBarcode(barcode);
+    }
+
     handleScanBarcode = (barcode) => {
-        console.log('test', barcode);
         if (!!barcode) {
             axios
                 .post("/admin/cart", { barcode })
@@ -260,22 +265,34 @@ class Cart extends Component {
         const { cart, products, customers, barcode, translations, showScanner} = this.state;
         return (
             <div className="row">
-                {!showScanner && (
-                    <button onClick={() => this.setState({ showScanner: true })}>
-                    Open Scanner
-                    </button>
-                )}
                 {showScanner && (
-                    <QRCodeScanner onScanComplete={this.handleScanComplete} />
+                    <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+                        <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                                <QRCodeScanner onScanComplete={this.handleScanComplete} />
+
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" onClick={this.handleHideScanner}>
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
                 <div className="col-md-6 col-lg-6 order-md-0 order-sm-1">
                     <div className="row mb-2">
+                        <div className="col" style={{    "max-width": "70px"}}>
+                        {!showScanner && (
+                            <button class="btn btn-dark" onClick={() => this.setState({ showScanner: true })}><i class="fas fa-qrcode"></i></button>
+                        )}
+                        </div>
                         <div className="col">
-                            <form onSubmit={this.handleScanBarcode}>
+                            <form onSubmit={this.handleScanBarcodeForm}>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    placeholder={translations["scan_barcode"]}
+                                    placeholder="QR Code"
                                     value={barcode}
                                     onChange={this.handleOnChangeBarcode}
                                 />
