@@ -56,7 +56,6 @@ const QRCodeScanner = ({ onScanComplete }) => {
 
   return (
     <div style={{ width: "100%" }}>
-      <h3>Scan Product QR Code</h3>
       <div id="qr-code-reader"></div>
     </div>
   );

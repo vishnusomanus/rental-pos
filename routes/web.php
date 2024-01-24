@@ -25,6 +25,7 @@ Route::prefix('admin')->middleware(['auth', 'restrict.login'])->group(function (
     Route::resource('products', ProductController::class);
     Route::get('/products/export/csv', [ProductController::class, 'exportCsv'])->name('products.export.csv');
     Route::get('/products/export/pdf', [ProductController::class, 'exportPdf'])->name('products.export.pdf');
+    Route::get('/products/export/qr', [ProductController::class, 'exportQRPdf'])->name('products.export.qr');
 
     Route::resource('customers', CustomerController::class);
     Route::get('/customers/export/csv', [CustomerController::class, 'exportCsv'])->name('customers.export.csv');

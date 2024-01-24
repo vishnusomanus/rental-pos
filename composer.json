@@ -11,6 +11,7 @@
         "php": ">=8.0.28",
         "doctrine/dbal": "^3.3",
         "dompdf/dompdf": "^2.0",
+        "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",

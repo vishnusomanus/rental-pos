@@ -9,8 +9,18 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Writer;
+
+use Dompdf\Adapter\CPDF;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\LabelAlignment;
+use Endroid\QrCode\Label\Font\NotoSans;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 
 
 class ProductController extends Controller
@@ -211,6 +221,58 @@ class ProductController extends Controller
         exit;
     }
     
+    public function exportQRPdf()
+    {
+        $products = $this->getFilteredProducts();
+    
+        $pdf = new Dompdf(new CPDF());
+        $pdf->setPaper('A4', 'portrait');
+    
+        $html = '<html><style>body { margin-top: 10mm; margin-bottom: 10mm; }</style><body>';
+        foreach ($products as $product) {
+            $qrCodeImage = $this->generateQRCode($product->barcode, $product->id, $product->name);
+            $html .= "<img src='{$qrCodeImage}' style='width: 30%; border: 1px solid red; padding: 5px; margin: 5px; page-break-inside: avoid;'>";
+        }
+        $html .= '</body></html>';
+    
+        $pdf->loadHtml($html);
+    
+        $pdf->render();
+    
+        $fileName = 'products_' . date('Y-m-d') . '.pdf';
+    
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $fileName . '"')
+            ->header('Cache-Control', 'private, max-age=0, must-revalidate')
+            ->header('Pragma', 'public');
+    }
+    
+    
+    private function generateQRCode($content, $id, $name)
+    {
+        $result = Builder::create()
+            ->writer(new PngWriter())
+            ->writerOptions([])
+            ->data($content)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(ErrorCorrectionLevel::High)  
+            ->size(300)
+            ->margin(10)
+            ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
+            ->labelText($name .' '. $id)
+            ->labelFont(new NotoSans(20))
+            ->labelAlignment(LabelAlignment::Center)
+            ->validateResult(false)
+            ->build();
+        // $imagePath = public_path('qrcodes/' . $id . '.png');
+        // $result->saveToFile($imagePath);
+        // $imageUrl = url('qrcodes/' . $id . '.png');
+
+        // return $imageUrl;
+        return $result->getDataUri();
+    }
+
 
     private function getFilteredProducts()
     {

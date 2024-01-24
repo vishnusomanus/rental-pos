@@ -41,6 +41,7 @@ class Cart extends Component {
         this.loadTranslations = this.loadTranslations.bind(this);
 
         this.handleScanComplete = this.handleScanComplete.bind(this);
+        this.handleHideScanner = this.handleHideScanner.bind(this);
     }
 
     componentDidMount() {
@@ -88,6 +89,11 @@ class Cart extends Component {
     handleOnChangeBarcode = (event) => {
         const barcode = event.target.value;
         this.setState({ barcode });
+    }
+
+    handleHideScanner = () => {
+        console.log('close');
+        this.setState({ showScanner : false });
     }
 
     loadCart() {
@@ -269,10 +275,16 @@ class Cart extends Component {
                     <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
                         <div className="modal-dialog" role="document">
                             <div className="modal-content">
+                            <div class="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">Scan Product QR Code</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleHideScanner}>
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
                                 <QRCodeScanner onScanComplete={this.handleScanComplete} />
 
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={this.handleHideScanner}>
+                                    <button type="button" className="btn btn-secondary btn-sm" onClick={this.handleHideScanner}>
                                         Close
                                     </button>
                                 </div>
@@ -282,9 +294,9 @@ class Cart extends Component {
                 )}
                 <div className="col-md-6 col-lg-6 order-md-0 order-sm-1">
                     <div className="row mb-2">
-                        <div className="col" style={{    "max-width": "70px"}}>
+                        <div className="col" style={{ maxWidth: "70px"}}>
                         {!showScanner && (
-                            <button class="btn btn-dark" onClick={() => this.setState({ showScanner: true })}><i class="fas fa-qrcode"></i></button>
+                            <button className="btn btn-dark" onClick={() => this.setState({ showScanner: true })}><i className="fas fa-qrcode"></i></button>
                         )}
                         </div>
                         <div className="col">
