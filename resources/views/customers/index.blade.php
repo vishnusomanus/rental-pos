@@ -73,22 +73,14 @@
     $(document).ready(function() {
         $(document).on('click', '.btn-delete', function() {
             var $this = $(this);
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-            })
-
-            swalWithBootstrapButtons.fire({
-                title: {{ __('customer.sure') }},
-                text: {{ __('customer.really_delete') }},
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: {{ __('customer.yes_delete') }},
-                cancelButtonText: {{ __('customer.No') }},
-                reverseButtons: true
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.value) {
                     $.post($this.data('url'), {

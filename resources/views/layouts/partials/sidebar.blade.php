@@ -61,12 +61,43 @@
                     </li>
                 @endif
                 @if(auth()->user()->role === 'admin')
-                <li class="nav-item has-treeview">
-                    <a href="{{ route('settings.index') }}" class="nav-link {{ activeSegment('settings') }}">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>{{ __('settings.title') }}</p>
-                    </a>
-                </li>
+                    <li class="nav-item has-treeview">
+                        <a href="{{ route('settings.index') }}" class="nav-link {{ activeSegment('settings') }}">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>{{ __('settings.title') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item has-treeview {{ activeSegmentOpen('import') }}">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-file-import"></i>
+                            <p>
+                                Imports
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('import.products.index') }}" class="nav-link {{ activeSegment3('products') }}">
+                                    <i class="nav-icon fas fa-cart-plus"></i>
+                                    <p>Products</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('import.customers.index') }}" class="nav-link {{ activeSegment3('customers') }}">
+                                    <i class="nav-icon fas fa-users"></i>
+                                    <p>Customers</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+                @if(auth()->user()->role === 'super_admin')
+                    <li class="nav-item has-treeview">
+                        <a href="{{ route('white-labels.index') }}" class="nav-link {{ activeSegment('white-labels') }}">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>White Labels</p>
+                        </a>
+                    </li>
                 @endif
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="document.getElementById('logout-form').submit()">
@@ -77,6 +108,7 @@
                         </form>
                     </a>
                 </li>
+                
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

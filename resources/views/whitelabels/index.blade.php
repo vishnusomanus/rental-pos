@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', 'Users')
-@section('content-header', 'Users')
+@section('title', 'White Labels')
+@section('content-header', 'White Labels')
 @section('content-actions')
-<a href="{{ route('users.create') }}" class="btn btn-primary">Add User</a>
+<a href="{{ route('white-labels.create') }}" class="btn btn-primary">Add White Label</a>
 @endsection
 
 @section('css')
@@ -15,7 +15,7 @@
     <div class="card-body">
         <div class="row mb-2">
             <div class="col-md-7">
-                <form class="form-inline" action="{{ route('users.index') }}">
+                <form class="form-inline" action="{{ route('white-labels.index') }}">
                     <div class="input-group input-group-md">
                         <input class="form-control form-control-navbar" type="search" name="search" placeholder="Search" aria-label="Search" value="{{ request('search') }}">
                         <div class="input-group-append">
@@ -24,8 +24,6 @@
                             </button>
                         </div>
                     </div>
-                    <a href="{{ route('users.export.csv') }}" class="btn btn-sm btn-secondary mt-2">CSV Export</a>
-                    <a href="{{ route('users.export.pdf') }}" class="btn btn-sm btn-secondary mt-2 ml-2" target="_blank">PDF Export</a>
                 </form>
             </div>
         </div>
@@ -33,38 +31,30 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Phone</th>
-                        <th>Address</th>
+                        <th>Domain</th>
+                        <th>Description</th>
+                        <th>URL</th>
                         <th>Created At</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($users as $user)
+                    @foreach ($whiteLabels as $whiteLabel)
                     <tr>
-                        <td>{{ $user->first_name }}</td>
-                        <td>{{ $user->last_name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->role }}</td>
-                        <td>{{ $user->phone }}</td>
-                        <td>{{ $user->address }}</td>
-                        <td>{{ $user->created_at }}</td>
+                        <td>{{ $whiteLabel->domain }}</td>
+                        <td>{{ $whiteLabel->description }}</td>
+                        <td>{{ $whiteLabel->url }}</td>
+                        <td>{{ $whiteLabel->created_at }}</td>
                         
                         <td>
-                            @if($user->role !== 'super_admin')
-                                <a href="{{ route('users.edit', $user) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                                <button class="btn btn-danger btn-delete btn-sm" data-url="{{ route('users.destroy', $user) }}"><i class="fas fa-trash"></i></button>
-                            @endif
+                            <a href="{{ route('white-labels.edit', $whiteLabel) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-danger btn-delete btn-sm" data-url="{{ route('white-labels.destroy', $whiteLabel) }}"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-            {{ $users->render() }}
+            {{ $whiteLabels->render() }}
         </div>
     </div>
 </div>

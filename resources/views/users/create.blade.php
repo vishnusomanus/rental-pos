@@ -50,9 +50,15 @@
                 <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control">
             </div>
 
+            
             <div class="form-group">
                 <label for="address">Address</label>
                 <textarea id="address" name="address" class="form-control">{{ old('address') }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="paassword" id="password" name="password" value="{{ old('password') }}" class="form-control">
             </div>
 
             <button type="submit" class="btn btn-primary">Create</button>

@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhiteLabelController;
+use App\Http\Controllers\CustomerImportController;
+use App\Http\Controllers\ProductImportController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,6 +51,13 @@ Route::prefix('admin')->middleware(['auth', 'restrict.login'])->group(function (
     Route::get('/users/export/csv', [UserController::class, 'exportCSV'])->name('users.export.csv');
 
     Route::resource('white-labels', WhiteLabelController::class);
+
+    Route::post('import/products', [ProductImportController::class, 'store'])->name('import.products.store');
+    Route::get('import/products', [ProductImportController::class, 'index'])->name('import.products.index');
+    
+    Route::post('import/customers', [CustomerImportController::class, 'store'])->name('import.customers.store');
+    Route::get('import/customers', [CustomerImportController::class, 'index'])->name('import.customers.index');
+
 
     // Transaltions route for React component
     Route::get('/locale/{type}', function ($type) {

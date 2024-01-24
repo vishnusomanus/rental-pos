@@ -57,6 +57,11 @@
                 <textarea id="address" name="address" class="form-control">{{ old('address', $user->address) }}</textarea>
             </div>
 
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="paassword" id="password" name="password" value="{{ old('password') }}" class="form-control">
+            </div>
+
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
         </form>

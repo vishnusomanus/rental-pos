@@ -55,7 +55,7 @@ class UserController extends Controller
             return redirect()->back()->with('error', __('User creation failed.'));
         }
 
-        return redirect()->route('users.show', $user->id)->with('success', 'User created successfully');
+        return redirect()->route('users.index', $user->id)->with('success', 'User created successfully');
     }
 
     public function show(User $user)

@@ -68,7 +68,7 @@
                             @endif
                         </td>
                         <td>{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
-                        <td><a href="{{ route('orders.edit', $order->id) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a></td>
+                        <td><a href="{{ route('orders.edit', $order->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a></td>
                     </tr>
                     @endforeach
                 </tbody>

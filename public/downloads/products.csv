@@ -1,0 +1,4 @@
+name,description,barcode,price,quantity,status
+Product 1,This is the description of Product 1,1234567890,10.99,50,1
+Product 2,This is the description of Product 2,987654321,19.99,100,1
+Product 3,This is the description of Product 3,9876543210,5.99,25,1

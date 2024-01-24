@@ -9,13 +9,13 @@ class WhiteLabelController extends Controller
 {
     public function index()
     {
-        $whiteLabels = WhiteLabel::latest()->paginate(config('settings.pagination'));
-        return view('whiteLabels.index', compact('whiteLabels'));
+        $whiteLabels = WhiteLabel::latest()->paginate(20);
+        return view('whitelabels.index', compact('whiteLabels'));
     }
 
     public function create()
     {
-        return view('whiteLabels.create');
+        return view('whitelabels.create');
     }
 
     public function store(Request $request)
@@ -24,15 +24,20 @@ class WhiteLabelController extends Controller
             'domain' => 'required',
             'description' => 'required',
             'url' => 'required'
+        ], [
+            'domain.required' => 'The domain field is required.',
+            'description.required' => 'The description field is required.',
+            'url.required' => 'The URL field is required.'
         ]);
-
+    
         WhiteLabel::create($validatedData);
-        return redirect()->route('white-labels.index')->with('success', 'White Label created successfully');
+        return redirect()->route('white_labels.index')->with('success', 'White Label created successfully');
     }
+    
 
     public function edit(WhiteLabel $whiteLabel)
     {
-        return view('whiteLabels.edit', compact('whiteLabel'));
+        return view('whitelabels.edit', compact('whiteLabel'));
     }
 
     public function update(Request $request, WhiteLabel $whiteLabel)
@@ -49,7 +54,7 @@ class WhiteLabelController extends Controller
 
     public function show(WhiteLabel $whiteLabel)
     {
-        return view('whiteLabels.show', compact('whiteLabel'));
+        return view('whitelabels.show', compact('whiteLabel'));
     }
 
     public function destroy(WhiteLabel $whiteLabel)
