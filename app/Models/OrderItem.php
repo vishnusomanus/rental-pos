@@ -18,4 +18,15 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    public function scopeForUser($query, $user)
+    {
+        if ($user->white_label_id === null) {
+            return $query;
+        }
+        
+        return $query->whereHas('product', function ($query) use ($user) {
+            $query->where('white_label_id', $user->white_label_id);
+        });
+    }
+
 }

@@ -50,7 +50,8 @@ class HomeController extends Controller
                 ->sum('amount');
         
             // Get the total number of products on rent for the day from the OrderItem model
-            $productOnRent = OrderItem::whereDate('created_at', $date)
+            $productOnRent = OrderItem::forUser(auth()->user())
+                ->whereDate('created_at', $date)
                 ->sum('quantity');
         
             // Store the daily statistics in the result array
