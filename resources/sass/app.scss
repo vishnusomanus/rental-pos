@@ -69,3 +69,15 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 .image.dropdown a#userDropdown::after{
     display: none;
 }
+.images_captured img {
+    max-width: 100px;
+    padding: 2px;
+}
+button.btn.btn-dark.camera {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 20px;
+    max-width: 120px;
+    margin: auto;
+}

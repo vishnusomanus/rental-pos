@@ -7,6 +7,7 @@ import $ from 'jquery';
 import 'bootstrap-select/dist/css/bootstrap-select.min.css';
 import 'bootstrap-select/dist/js/bootstrap-select.min.js';
 import QRCodeScanner from './QRCodeScanner'
+import CameraComponent from './CameraComponent';
 
 class Cart extends Component {
     constructor(props) {
@@ -22,6 +23,8 @@ class Cart extends Component {
             customer_notes: "",
             translations: {}, 
             showScanner: false,
+            showCamera: false,
+            capturedImages: [],
         };
 
         this.loadCart = this.loadCart.bind(this);
@@ -42,6 +45,10 @@ class Cart extends Component {
 
         this.handleScanComplete = this.handleScanComplete.bind(this);
         this.handleHideScanner = this.handleHideScanner.bind(this);
+
+        this.handleOpenCamera = this.handleOpenCamera.bind(this);
+        this.handleCaptureImage = this.handleCaptureImage.bind(this);
+        this.handleCloseModal    = this.handleCloseModal   .bind(this);
     }
 
     componentDidMount() {
@@ -51,7 +58,20 @@ class Cart extends Component {
         this.loadCart();
         this.loadProducts();
     }
-    
+
+    handleOpenCamera = () => {
+        this.setState({ showCamera: true });
+    }
+
+    handleCaptureImage = (dataURL) => {
+        this.setState(prevState => ({
+          capturedImages: [...prevState.capturedImages, dataURL],
+        }));
+    };
+
+    handleCloseModal = () => {
+        this.setState({ showCamera: false });
+    };
 
     // load the transaltions for the react component
     loadTranslations() {
@@ -92,7 +112,6 @@ class Cart extends Component {
     }
 
     handleHideScanner = () => {
-        console.log('close');
         this.setState({ showScanner : false });
     }
 
@@ -248,11 +267,12 @@ class Cart extends Component {
                         customer_id: this.state.customer_id,
                         customer_proof: this.state.customer_proof,
                         customer_notes: this.state.customer_notes,
-                        amount
+                        amount,
+                        capturedImages: this.state.capturedImages,
                     })
                     .then((res) => {
                         this.loadCart();
-                        window.location.href = '/admin/orders';
+                        //window.location.href = '/admin/orders';
                         return res.data;
                     })
                     .catch((err) => {
@@ -268,201 +288,252 @@ class Cart extends Component {
     }
     render() {
         $('.selectpicker').selectpicker('refresh');
-        const { cart, products, customers, barcode, translations, showScanner} = this.state;
+        const { cart, products, customers, barcode, translations, showScanner, showCamera} = this.state;
         return (
-            <div className="row">
-                {showScanner && (
-                    <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-                        <div className="modal-dialog" role="document">
-                            <div className="modal-content">
-                            <div class="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">Scan Product QR Code</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleHideScanner}>
-                                <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                                <QRCodeScanner onScanComplete={this.handleScanComplete} />
-
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary btn-sm" onClick={this.handleHideScanner}>
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <div className="col-md-6 col-lg-6 order-md-0 order-sm-1">
-                    <div className="row mb-2">
-                        <div className="col" style={{ maxWidth: "70px"}}>
-                        {!showScanner && (
-                            <button className="btn btn-dark" onClick={() => this.setState({ showScanner: true })}><i className="fas fa-qrcode"></i></button>
-                        )}
-                        </div>
-                        <div className="col">
-                            <form onSubmit={this.handleScanBarcodeForm}>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="QR Code"
-                                    value={barcode}
-                                    onChange={this.handleOnChangeBarcode}
-                                />
-                            </form>
-                        </div>
-                        <div className="col">
-                            {customers.length > 0 ? (
-                                <select
-                                    className="form-control selectpicker"
-                                    onChange={this.setCustomerId}
-                                    data-live-search="true"
-                                    title="Select Customer"
-                                    data-size="5" // Set the number of visible options
-                                >
-                                    {customers.map((cus) => (
-                                        <option key={cus.id} value={cus.id}>
-                                            {`${cus.first_name} ${cus.last_name}`}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : (
-                                <p>Loading customers...</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="user-cart">
-                        <div className="card">
-                            <table className="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>{translations["product_name"]}</th>
-                                        <th>{translations["quantity"]}</th>
-                                        <th>Days</th>
-                                        <th className="text-right">{translations["price"]}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {cart.map((c) => (
-                                        <tr key={c.id}>
-                                            <td>{c.name}</td>
-                                            <td>
-                                                <input
-                                                    type="text"
-                                                    className="form-control form-control-sm qty"
-                                                    value={c.pivot.quantity}
-                                                    onChange={(event) =>
-                                                        this.handleChangeQty(
-                                                            c.id,
-                                                            event.target.value,
-                                                            c.pivot.days 
-                                                        )
-                                                    }
-                                                />
-                                                <button
-                                                    className="btn btn-danger btn-sm"
-                                                    onClick={() =>
-                                                        this.handleClickDelete(
-                                                            c.id
-                                                        )
-                                                    }
-                                                >
-                                                    <i className="fas fa-trash"></i>
-                                                </button>
-                                            </td>
-                                            <td>
-                                            <input
-                                                    type="number"
-                                                    className="form-control form-control-sm days"
-                                                    value={c.pivot.days}
-                                                    onChange={(event) =>
-                                                        this.handleChangeQty(
-                                                            c.id,
-                                                            c.pivot.quantity,
-                                                            event.target.value
-                                                        )
-                                                    }
-                                                />
-                                            </td>
-                                            <td className="text-right">
-                                                {window.APP.currency_symbol}{" "}
-                                                {(
-                                                    c.price * c.pivot.quantity
-                                                ).toFixed(2)}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+            <>
+                <div className="row">
+                    <div className="col">
+                        <button
+                            type="button"
+                            className="btn btn-dark"
+                            onClick={this.handleOpenCamera.bind(this)}
+                        >
+                            <i class="fas fa-camera"></i>
+                        </button>
                     </div>
 
-                    <div className="row">
-                        <div className="col">{translations["total"]}:</div>
-                        <div className="col text-right">
-                            {window.APP.currency_symbol} {this.getTotal(cart)}
-                        </div>
-                    </div>
-                    <div className="row">
+                    {/* {this.state.showCamera && (
                         <div className="col">
-                            <input type="text" placeholder="Rental Guarantee: ID Cards, Passports, etc." className="form-control mb-2" onChange={this.setCustomerProof} />
-                            <textarea placeholder="Details/Notes" className="form-control mb-2"  onChange={this.setCustomerNotes}> </textarea>
+                            <CameraComponent onCapture={this.handleCaptureImage} />
                         </div>
-                    </div>
-                    <div className="row">
-                        <div className="col">
-                            <button
-                                type="button"
-                                className="btn btn-danger btn-block"
-                                onClick={this.handleEmptyCart}
-                                disabled={!cart.length || !this.state.customer_id}
-                            >
-                                {translations["cancel"]}
-                            </button>
-                        </div>
-                        <div className="col">
-                            <button
-                                type="button"
-                                className="btn btn-primary btn-block"
-                                disabled={!cart.length || !this.state.customer_id}
-                                onClick={this.handleClickSubmit}
-                            >
-                                {translations["checkout"]}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-6 col-lg-6">
-                    <div className="mb-2">
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder={translations["search_product"] + "..."}
-                            onChange={this.handleChangeSearch}
-                            onKeyDown={this.handleSeach}
-                        />
-                    </div>
-                    <div className="order-product">
-                        {products.map((p) => (
-                            <div
-                                onClick={() => this.addProductToCart(p.barcode)}
-                                key={p.id}
-                                className="item"
-                            >
-                                <img src={p.image_url == '/storage/' ? '/images/default.png' : p.image_url} alt="" />
-                                <h5
-                                    style={
-                                        window.APP.warning_quantity > p.quantity
-                                            ? { color: "red" }
-                                            : {}
-                                    }
-                                >
-                                    {p.name}({p.quantity})
-                                </h5>
-                            </div>
+                    )} */}
+                     <div className='images_captured'>
+                        {this.state.capturedImages.map((image, index) => (
+                            <img key={index} src={image} alt={`Captured Image ${index}`} />
                         ))}
                     </div>
                 </div>
-            </div>
+                <div className="row">
+                    {showCamera && (
+                        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+                            <div className="modal-dialog modal-fullscreen" role="document">
+                                <div className="modal-content">
+                                <div class="modal-header">
+                                    <h5 className="modal-title" id="exampleModalLabel">Capture Image</h5>
+                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleCloseModal}>
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div className="position-relative">
+                                    <CameraComponent onCapture={this.handleCaptureImage} />
+                                </div>
+                                <div className='images_captured'>
+                                    {this.state.capturedImages.map((image, index) => (
+                                        <img key={index} src={image} alt={`Captured Image ${index}`} />
+                                    ))}
+                                </div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary btn-sm" onClick={this.handleCloseModal}>
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showScanner && (
+                        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+                            <div className="modal-dialog" role="document">
+                                <div className="modal-content">
+                                <div class="modal-header">
+                                    <h5 className="modal-title" id="exampleModalLabel">Scan Product QR Code</h5>
+                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleHideScanner}>
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                    <QRCodeScanner onScanComplete={this.handleScanComplete} />
+
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary btn-sm" onClick={this.handleHideScanner}>
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className="col-md-6 col-lg-6 order-md-0 order-sm-1">
+                        <div className="row mb-2">
+                            <div className="col" style={{ maxWidth: "70px"}}>
+                            {!showScanner && (
+                                <button className="btn btn-dark" onClick={() => this.setState({ showScanner: true })}><i className="fas fa-qrcode"></i></button>
+                            )}
+                            </div>
+                            <div className="col">
+                                <form onSubmit={this.handleScanBarcodeForm}>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="QR Code"
+                                        value={barcode}
+                                        onChange={this.handleOnChangeBarcode}
+                                    />
+                                </form>
+                            </div>
+                            <div className="col">
+                                {customers.length > 0 ? (
+                                    <select
+                                        className="form-control selectpicker"
+                                        onChange={this.setCustomerId}
+                                        data-live-search="true"
+                                        title="Select Customer"
+                                        data-size="5" // Set the number of visible options
+                                    >
+                                        {customers.map((cus) => (
+                                            <option key={cus.id} value={cus.id}>
+                                                {`${cus.first_name} ${cus.last_name}`}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <p>Loading customers...</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className="user-cart">
+                            <div className="card">
+                                <table className="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>{translations["product_name"]}</th>
+                                            <th>{translations["quantity"]}</th>
+                                            <th>Days</th>
+                                            <th className="text-right">{translations["price"]}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {cart.map((c) => (
+                                            <tr key={c.id}>
+                                                <td>{c.name}</td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control form-control-sm qty"
+                                                        value={c.pivot.quantity}
+                                                        onChange={(event) =>
+                                                            this.handleChangeQty(
+                                                                c.id,
+                                                                event.target.value,
+                                                                c.pivot.days 
+                                                            )
+                                                        }
+                                                    />
+                                                    <button
+                                                        className="btn btn-danger btn-sm"
+                                                        onClick={() =>
+                                                            this.handleClickDelete(
+                                                                c.id
+                                                            )
+                                                        }
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                <input
+                                                        type="number"
+                                                        className="form-control form-control-sm days"
+                                                        value={c.pivot.days}
+                                                        onChange={(event) =>
+                                                            this.handleChangeQty(
+                                                                c.id,
+                                                                c.pivot.quantity,
+                                                                event.target.value
+                                                            )
+                                                        }
+                                                    />
+                                                </td>
+                                                <td className="text-right">
+                                                    {window.APP.currency_symbol}{" "}
+                                                    {(
+                                                        c.price * c.pivot.quantity
+                                                    ).toFixed(2)}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col">{translations["total"]}:</div>
+                            <div className="col text-right">
+                                {window.APP.currency_symbol} {this.getTotal(cart)}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                <input type="text" placeholder="Rental Guarantee: ID Cards, Passports, etc." className="form-control mb-2" onChange={this.setCustomerProof} />
+                                <textarea placeholder="Details/Notes" className="form-control mb-2"  onChange={this.setCustomerNotes}> </textarea>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                <button
+                                    type="button"
+                                    className="btn btn-danger btn-block"
+                                    onClick={this.handleEmptyCart}
+                                    disabled={!cart.length || !this.state.customer_id}
+                                >
+                                    {translations["cancel"]}
+                                </button>
+                            </div>
+                            <div className="col">
+                                <button
+                                    type="button"
+                                    className="btn btn-primary btn-block"
+                                    disabled={!cart.length || !this.state.customer_id}
+                                    onClick={this.handleClickSubmit}
+                                >
+                                    {translations["checkout"]}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-lg-6">
+                        <div className="mb-2">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder={translations["search_product"] + "..."}
+                                onChange={this.handleChangeSearch}
+                                onKeyDown={this.handleSeach}
+                            />
+                        </div>
+                        <div className="order-product">
+                            {products.map((p) => (
+                                <div
+                                    onClick={() => this.addProductToCart(p.barcode)}
+                                    key={p.id}
+                                    className="item"
+                                >
+                                    <img src={p.image_url == '/storage/' ? '/images/default.png' : p.image_url} alt="" />
+                                    <h5
+                                        style={
+                                            window.APP.warning_quantity > p.quantity
+                                                ? { color: "red" }
+                                                : {}
+                                        }
+                                    >
+                                        {p.name}({p.quantity})
+                                    </h5>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </>
         );
     }
 }

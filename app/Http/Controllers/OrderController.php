@@ -10,6 +10,7 @@ use App\Models\Payment;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Response;
 use League\Csv\Writer;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -102,6 +103,42 @@ class OrderController extends Controller
             'user_id' => $request->user()->id,
             'white_label_id' => $request->user()->white_label_id
         ]);
+
+        // $image_path = '';
+
+        // if ($request->hasFile('image')) {
+        //     $folderName = 'public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
+        //     $image_path = $request->file('image')->store($folderName);
+        //     $imageUrl = Storage::url($image_path);
+
+        //     $order->orderImages()->create([
+        //         'image' => $imageUrl,
+        //         'description' => '',
+        //     ]);
+        // }
+
+        if (!empty($request->capturedImages)) {
+            foreach ($request->capturedImages as $image) {
+                $folderName = 'public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
+                
+                if (preg_match('/^data:image\/(\w+);base64,/', $image)) {
+                    $image = preg_replace('/^data:image\/(\w+);base64,/', '', $image);
+                    $image = str_replace(' ', '+', $image);
+                    $decodedImage = base64_decode($image);
+                    
+                    $imageName = uniqid() . '.png';
+                    Storage::put($folderName . '/' . $imageName, $decodedImage);
+                    
+                    $imageUrl = Storage::url($folderName . '/' . $imageName);
+                    
+                    $order->orderImages()->create([
+                        'image' => $imageUrl,
+                        'description' => '',
+                    ]);
+                }
+            }
+        }
+
         return 'success';
     }
     public function edit(Order $order)

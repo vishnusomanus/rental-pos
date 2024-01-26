@@ -30,6 +30,10 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+    public function orderImages()
+    {
+        return $this->hasMany(OrderImage::class);
+    }
 
     public function customer()
     {
