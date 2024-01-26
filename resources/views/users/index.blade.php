@@ -29,7 +29,8 @@
                 </form>
             </div>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive swipe-container">
+            <div class="swipe-overlay"><i class="fas fa-chevron-left"></i> Swipe here <i class="fas fa-chevron-right"></i></div>
             <table class="table">
                 <thead>
                     <tr>
@@ -96,6 +97,13 @@
                 })
             }
         })
+    });
+    
+    $('.table-responsive').scroll(function() {
+        var scrollLeft = $(this).scrollLeft();
+        if (scrollLeft > 0) {
+            $('.swipe-overlay').hide();
+        }
     });
 </script>
 @endsection

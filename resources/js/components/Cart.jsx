@@ -1,13 +1,13 @@
-import React, { Component, useEffect  } from 'react';
-import { createRoot } from 'react-dom';
+import React, { Component, useEffect } from "react";
+import { createRoot } from "react-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { sum } from "lodash";
-import $ from 'jquery';
-import 'bootstrap-select/dist/css/bootstrap-select.min.css';
-import 'bootstrap-select/dist/js/bootstrap-select.min.js';
-import QRCodeScanner from './QRCodeScanner'
-import CameraComponent from './CameraComponent';
+import $ from "jquery";
+import "bootstrap-select/dist/css/bootstrap-select.min.css";
+import "bootstrap-select/dist/js/bootstrap-select.min.js";
+import QRCodeScanner from "./QRCodeScanner";
+import CameraComponent from "./CameraComponent";
 
 class Cart extends Component {
     constructor(props) {
@@ -21,7 +21,7 @@ class Cart extends Component {
             customer_id: "",
             customer_proof: "",
             customer_notes: "",
-            translations: {}, 
+            translations: {},
             showScanner: false,
             showCamera: false,
             capturedImages: [],
@@ -48,7 +48,7 @@ class Cart extends Component {
 
         this.handleOpenCamera = this.handleOpenCamera.bind(this);
         this.handleCaptureImage = this.handleCaptureImage.bind(this);
-        this.handleCloseModal    = this.handleCloseModal   .bind(this);
+        this.handleCloseModal = this.handleCloseModal.bind(this);
     }
 
     componentDidMount() {
@@ -61,11 +61,11 @@ class Cart extends Component {
 
     handleOpenCamera = () => {
         this.setState({ showCamera: true });
-    }
+    };
 
     handleCaptureImage = (dataURL) => {
-        this.setState(prevState => ({
-          capturedImages: [...prevState.capturedImages, dataURL],
+        this.setState((prevState) => ({
+            capturedImages: [...prevState.capturedImages, dataURL],
         }));
     };
 
@@ -75,14 +75,17 @@ class Cart extends Component {
 
     // load the transaltions for the react component
     loadTranslations() {
-        axios.get("/admin/locale/cart").then((res) => {
-            const translations = res.data;
-            this.setState({ translations });
-        }).catch((error) => {
-            console.error("Error loading translations:", error);
-        });
+        axios
+            .get("/admin/locale/cart")
+            .then((res) => {
+                const translations = res.data;
+                this.setState({ translations });
+            })
+            .catch((error) => {
+                console.error("Error loading translations:", error);
+            });
     }
-    
+
     handleScanComplete(barcode) {
         console.log("Scanned value:", barcode);
         this.setState({ showScanner: false });
@@ -94,7 +97,6 @@ class Cart extends Component {
         axios.get(`/admin/customers`).then((res) => {
             const customers = res.data;
             this.setState({ customers });
-            
         });
     }
 
@@ -109,11 +111,11 @@ class Cart extends Component {
     handleOnChangeBarcode = (event) => {
         const barcode = event.target.value;
         this.setState({ barcode });
-    }
+    };
 
     handleHideScanner = () => {
-        this.setState({ showScanner : false });
-    }
+        this.setState({ showScanner: false });
+    };
 
     loadCart() {
         axios.get("/admin/cart").then((res) => {
@@ -126,7 +128,7 @@ class Cart extends Component {
         event.preventDefault();
         const { barcode } = this.state;
         this.handleScanBarcode(barcode);
-    }
+    };
 
     handleScanBarcode = (barcode) => {
         if (!!barcode) {
@@ -140,7 +142,7 @@ class Cart extends Component {
                     Swal.fire("Error!", err.response.data.message, "error");
                 });
         }
-    }
+    };
     handleChangeQty(product_id, qty, days) {
         const cart = this.state.cart.map((c) => {
             if (c.id === product_id) {
@@ -149,7 +151,7 @@ class Cart extends Component {
             }
             return c;
         });
-    
+
         this.setState({ cart });
         if (!qty) return;
 
@@ -167,9 +169,11 @@ class Cart extends Component {
                 this.setState({ cart: updatedCart });
             });
     }
-    
+
     getTotal(cart) {
-        const total = cart.map((c) => c.pivot.quantity * c.price * c.pivot.days);
+        const total = cart.map(
+            (c) => c.pivot.quantity * c.price * c.pivot.days
+        );
         return sum(total).toFixed(2);
     }
     handleClickDelete(product_id) {
@@ -257,7 +261,7 @@ class Cart extends Component {
             title: this.state.translations["received_amount"],
             input: "text",
             inputValue: this.getTotal(this.state.cart),
-            cancelButtonText: this.state.translations['cancel_pay'],
+            cancelButtonText: this.state.translations["cancel_pay"],
             showCancelButton: true,
             confirmButtonText: this.state.translations["confirm_pay"],
             showLoaderOnConfirm: true,
@@ -272,7 +276,7 @@ class Cart extends Component {
                     })
                     .then((res) => {
                         this.loadCart();
-                        //window.location.href = '/admin/orders';
+                        window.location.href = '/admin/orders';
                         return res.data;
                     })
                     .catch((err) => {
@@ -287,53 +291,93 @@ class Cart extends Component {
         });
     }
     render() {
-        $('.selectpicker').selectpicker('refresh');
-        const { cart, products, customers, barcode, translations, showScanner, showCamera} = this.state;
+        $(".selectpicker").selectpicker("refresh");
+        const {
+            cart,
+            products,
+            customers,
+            barcode,
+            translations,
+            showScanner,
+            showCamera,
+        } = this.state;
         return (
             <>
-                <div className="row">
-                    <div className="col">
+                <div className="d-flex flex-row-reverse">
+                    <div className=" mb-2">
                         <button
                             type="button"
                             className="btn btn-dark"
                             onClick={this.handleOpenCamera.bind(this)}
                         >
-                            <i class="fas fa-camera"></i>
+                            <i className="fas fa-camera"></i>
                         </button>
                     </div>
-
-                    {/* {this.state.showCamera && (
-                        <div className="col">
-                            <CameraComponent onCapture={this.handleCaptureImage} />
-                        </div>
-                    )} */}
-                     <div className='images_captured'>
-                        {this.state.capturedImages.map((image, index) => (
-                            <img key={index} src={image} alt={`Captured Image ${index}`} />
-                        ))}
-                    </div>
+                </div>
+                <div className="mb-2 images_captured">
+                    {this.state.capturedImages.length != 0  && <div><strong>Captured Images</strong></div>}
+                    {this.state.capturedImages.map((image, index) => (
+                        <img
+                            key={index}
+                            src={image}
+                            alt={`Captured Image ${index}`}
+                        />
+                    ))}
                 </div>
                 <div className="row">
                     {showCamera && (
-                        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-                            <div className="modal-dialog modal-fullscreen" role="document">
+                        <div
+                            className="modal"
+                            tabIndex="-1"
+                            role="dialog"
+                            style={{ display: "block" }}
+                        >
+                            <div
+                                className="modal-dialog modal-fullscreen"
+                                role="document"
+                            >
                                 <div className="modal-content">
-                                <div class="modal-header">
-                                    <h5 className="modal-title" id="exampleModalLabel">Capture Image</h5>
-                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleCloseModal}>
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div className="position-relative">
-                                    <CameraComponent onCapture={this.handleCaptureImage} />
-                                </div>
-                                <div className='images_captured'>
-                                    {this.state.capturedImages.map((image, index) => (
-                                        <img key={index} src={image} alt={`Captured Image ${index}`} />
-                                    ))}
-                                </div>
+                                    <div className="modal-header">
+                                        <h5
+                                            className="modal-title"
+                                            id="exampleModalLabel"
+                                        >
+                                            Capture Image
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            className="close"
+                                            data-dismiss="modal"
+                                            aria-label="Close"
+                                            onClick={this.handleCloseModal}
+                                        >
+                                            <span aria-hidden="true">
+                                                &times;
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div className="position-relative">
+                                        <CameraComponent
+                                            onCapture={this.handleCaptureImage}
+                                        />
+                                    </div>
+                                    <div className="images_captured">
+                                        {this.state.capturedImages.map(
+                                            (image, index) => (
+                                                <img
+                                                    key={index}
+                                                    src={image}
+                                                    alt={`Captured Image ${index}`}
+                                                />
+                                            )
+                                        )}
+                                    </div>
                                     <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary btn-sm" onClick={this.handleCloseModal}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-secondary btn-sm"
+                                            onClick={this.handleCloseModal}
+                                        >
                                             Close
                                         </button>
                                     </div>
@@ -342,19 +386,43 @@ class Cart extends Component {
                         </div>
                     )}
                     {showScanner && (
-                        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+                        <div
+                            className="modal"
+                            tabIndex="-1"
+                            role="dialog"
+                            style={{ display: "block" }}
+                        >
                             <div className="modal-dialog" role="document">
                                 <div className="modal-content">
-                                <div class="modal-header">
-                                    <h5 className="modal-title" id="exampleModalLabel">Scan Product QR Code</h5>
-                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleHideScanner}>
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                    <QRCodeScanner onScanComplete={this.handleScanComplete} />
+                                    <div className="modal-header">
+                                        <h5
+                                            className="modal-title"
+                                            id="exampleModalLabel"
+                                        >
+                                            Scan Product QR Code
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            className="close"
+                                            data-dismiss="modal"
+                                            aria-label="Close"
+                                            onClick={this.handleHideScanner}
+                                        >
+                                            <span aria-hidden="true">
+                                                &times;
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <QRCodeScanner
+                                        onScanComplete={this.handleScanComplete}
+                                    />
 
                                     <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary btn-sm" onClick={this.handleHideScanner}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-secondary btn-sm"
+                                            onClick={this.handleHideScanner}
+                                        >
                                             Close
                                         </button>
                                     </div>
@@ -364,10 +432,17 @@ class Cart extends Component {
                     )}
                     <div className="col-md-6 col-lg-6 order-md-0 order-sm-1">
                         <div className="row mb-2">
-                            <div className="col" style={{ maxWidth: "70px"}}>
-                            {!showScanner && (
-                                <button className="btn btn-dark" onClick={() => this.setState({ showScanner: true })}><i className="fas fa-qrcode"></i></button>
-                            )}
+                            <div className="col" style={{ maxWidth: "70px" }}>
+                                {!showScanner && (
+                                    <button
+                                        className="btn btn-dark"
+                                        onClick={() =>
+                                            this.setState({ showScanner: true })
+                                        }
+                                    >
+                                        <i className="fas fa-qrcode"></i>
+                                    </button>
+                                )}
                             </div>
                             <div className="col">
                                 <form onSubmit={this.handleScanBarcodeForm}>
@@ -405,10 +480,14 @@ class Cart extends Component {
                                 <table className="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>{translations["product_name"]}</th>
+                                            <th>
+                                                {translations["product_name"]}
+                                            </th>
                                             <th>{translations["quantity"]}</th>
                                             <th>Days</th>
-                                            <th className="text-right">{translations["price"]}</th>
+                                            <th className="text-right">
+                                                {translations["price"]}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -423,8 +502,9 @@ class Cart extends Component {
                                                         onChange={(event) =>
                                                             this.handleChangeQty(
                                                                 c.id,
-                                                                event.target.value,
-                                                                c.pivot.days 
+                                                                event.target
+                                                                    .value,
+                                                                c.pivot.days
                                                             )
                                                         }
                                                     />
@@ -440,15 +520,17 @@ class Cart extends Component {
                                                     </button>
                                                 </td>
                                                 <td>
-                                                <input
+                                                    <input
                                                         type="number"
                                                         className="form-control form-control-sm days"
                                                         value={c.pivot.days}
                                                         onChange={(event) =>
                                                             this.handleChangeQty(
                                                                 c.id,
-                                                                c.pivot.quantity,
-                                                                event.target.value
+                                                                c.pivot
+                                                                    .quantity,
+                                                                event.target
+                                                                    .value
                                                             )
                                                         }
                                                     />
@@ -456,7 +538,8 @@ class Cart extends Component {
                                                 <td className="text-right">
                                                     {window.APP.currency_symbol}{" "}
                                                     {(
-                                                        c.price * c.pivot.quantity
+                                                        c.price *
+                                                        c.pivot.quantity
                                                     ).toFixed(2)}
                                                 </td>
                                             </tr>
@@ -469,13 +552,25 @@ class Cart extends Component {
                         <div className="row">
                             <div className="col">{translations["total"]}:</div>
                             <div className="col text-right">
-                                {window.APP.currency_symbol} {this.getTotal(cart)}
+                                {window.APP.currency_symbol}{" "}
+                                {this.getTotal(cart)}
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
-                                <input type="text" placeholder="Rental Guarantee: ID Cards, Passports, etc." className="form-control mb-2" onChange={this.setCustomerProof} />
-                                <textarea placeholder="Details/Notes" className="form-control mb-2"  onChange={this.setCustomerNotes}> </textarea>
+                                <input
+                                    type="text"
+                                    placeholder="Rental Guarantee: ID Cards, Passports, etc."
+                                    className="form-control mb-2"
+                                    onChange={this.setCustomerProof}
+                                />
+                                <textarea
+                                    placeholder="Details/Notes"
+                                    className="form-control mb-2"
+                                    onChange={this.setCustomerNotes}
+                                >
+                                    {" "}
+                                </textarea>
                             </div>
                         </div>
                         <div className="row">
@@ -484,7 +579,9 @@ class Cart extends Component {
                                     type="button"
                                     className="btn btn-danger btn-block"
                                     onClick={this.handleEmptyCart}
-                                    disabled={!cart.length || !this.state.customer_id}
+                                    disabled={
+                                        !cart.length || !this.state.customer_id
+                                    }
                                 >
                                     {translations["cancel"]}
                                 </button>
@@ -493,7 +590,9 @@ class Cart extends Component {
                                 <button
                                     type="button"
                                     className="btn btn-primary btn-block"
-                                    disabled={!cart.length || !this.state.customer_id}
+                                    disabled={
+                                        !cart.length || !this.state.customer_id
+                                    }
                                     onClick={this.handleClickSubmit}
                                 >
                                     {translations["checkout"]}
@@ -506,7 +605,9 @@ class Cart extends Component {
                             <input
                                 type="text"
                                 className="form-control"
-                                placeholder={translations["search_product"] + "..."}
+                                placeholder={
+                                    translations["search_product"] + "..."
+                                }
                                 onChange={this.handleChangeSearch}
                                 onKeyDown={this.handleSeach}
                             />
@@ -514,14 +615,24 @@ class Cart extends Component {
                         <div className="order-product">
                             {products.map((p) => (
                                 <div
-                                    onClick={() => this.addProductToCart(p.barcode)}
+                                    onClick={() =>
+                                        this.addProductToCart(p.barcode)
+                                    }
                                     key={p.id}
                                     className="item"
                                 >
-                                    <img src={p.image_url == '/storage/' ? '/images/default.png' : p.image_url} alt="" />
+                                    <img
+                                        src={
+                                            p.image_url == "/storage/"
+                                                ? "/images/default.png"
+                                                : p.image_url
+                                        }
+                                        alt=""
+                                    />
                                     <h5
                                         style={
-                                            window.APP.warning_quantity > p.quantity
+                                            window.APP.warning_quantity >
+                                            p.quantity
                                                 ? { color: "red" }
                                                 : {}
                                         }
@@ -540,7 +651,7 @@ class Cart extends Component {
 
 export default Cart;
 
-const root = document.getElementById('cart');
+const root = document.getElementById("cart");
 if (root) {
     const rootInstance = createRoot(root);
     rootInstance.render(<Cart />);

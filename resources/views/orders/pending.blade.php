@@ -38,7 +38,8 @@
                 </form>
             </div>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive swipe-container">
+            <div class="swipe-overlay"><i class="fas fa-chevron-left"></i> Swipe here <i class="fas fa-chevron-right"></i></div>
             <table class="table">
                 <thead>
                     <tr>
@@ -88,5 +89,16 @@
         {{ $orders->render() }}
     </div>
 </div>
+@endsection
+
+@section('js')
+    <script type="module">
+    $('.table-responsive').scroll(function() {
+            var scrollLeft = $(this).scrollLeft();
+            if (scrollLeft > 0) {
+                $('.swipe-overlay').hide();
+            }
+        });
+    </script>
 @endsection
 

@@ -70,7 +70,7 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
     display: none;
 }
 .images_captured img {
-    max-width: 100px;
+    max-width: 75px;
     padding: 2px;
 }
 button.btn.btn-dark.camera {
@@ -80,4 +80,22 @@ button.btn.btn-dark.camera {
     bottom: 20px;
     max-width: 120px;
     margin: auto;
+}
+
+.swipe-container {
+    position: relative;
+}
+
+.swipe-overlay {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: opacity 0.3s ease-in-out;
 }
