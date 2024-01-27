@@ -127,7 +127,11 @@ class OrderController extends Controller
                     $decodedImage = base64_decode($image);
                     
                     $imageName = uniqid() . '.png';
-                    Storage::put($folderName . '/' . $imageName, $decodedImage);
+                    Storage::makeDirectory($folderName, 0755);
+                    $filePermission = 0644;
+                    Storage::put($folderName . '/' . $imageName, $decodedImage, 'public');
+                    Storage::setVisibility($folderName . '/' . $imageName, 'public');
+                    Storage::chmod($folderName . '/' . $imageName, $filePermission);
                     
                     $imageUrl = Storage::url($folderName . '/' . $imageName);
                     
@@ -138,7 +142,7 @@ class OrderController extends Controller
                 }
             }
         }
-
+        
         return 'success';
     }
     public function edit(Order $order)

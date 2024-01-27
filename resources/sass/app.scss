@@ -99,3 +99,48 @@ button.btn.btn-dark.camera {
     border-radius: 5px;
     transition: opacity 0.3s ease-in-out;
 }
+.swipe-overlay {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.swipe-overlay i {
+    display: inline-block;
+    position: relative;
+  }
+  
+  .swipe-overlay .fa-chevron-left {
+    animation: slide-left infinite 2s linear;
+  }
+  
+  .swipe-overlay .fa-chevron-right {
+    animation: slide-right infinite 2s linear;
+  }
+  
+  @keyframes slide-left {
+    0% {
+      transform: translateX(0);
+    }
+  
+    50% {
+      transform: translateX(-100%);
+    }
+  
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slide-right {
+    0% {
+      transform: translateX(0);
+    }
+  
+    50% {
+      transform: translateX(100%);
+    }
+  
+    100% {
+      transform: translateX(0);
+    }
+  }

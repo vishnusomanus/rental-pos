@@ -93,12 +93,17 @@
 
 @section('js')
     <script type="module">
-    $('.table-responsive').scroll(function() {
+    var container = $('.table-responsive');
+    if (container.length > 0 && container.get(0).scrollWidth > container.innerWidth()) {
+        container.scroll(function() {
             var scrollLeft = $(this).scrollLeft();
             if (scrollLeft > 0) {
                 $('.swipe-overlay').hide();
             }
         });
+    } else {
+        $('.swipe-overlay').hide();
+    }
     </script>
 @endsection
 

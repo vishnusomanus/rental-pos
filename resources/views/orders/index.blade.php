@@ -132,14 +132,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
     <script >
-    $('.table-responsive').scroll(function() {
-        var scrollLeft = $(this).scrollLeft();
-        if (scrollLeft > 0) {
-            $('.swipe-overlay').hide();
-        }
-    });
+
 
         $(document).ready(function() {
+            var container = $('.table-responsive');
+            if (container.length > 0 && container.get(0).scrollWidth > container.innerWidth()) {
+                container.scroll(function() {
+                    var scrollLeft = $(this).scrollLeft();
+                    if (scrollLeft > 0) {
+                        $('.swipe-overlay').hide();
+                    }
+                });
+            } else {
+                $('.swipe-overlay').hide();
+            }
             jQuery('[data-fancybox]').fancybox({
                 buttons: [
                     'zoom',
