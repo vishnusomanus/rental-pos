@@ -119,7 +119,7 @@ class OrderController extends Controller
 
         if (!empty($request->capturedImages)) {
             foreach ($request->capturedImages as $image) {
-                $folderName = 'storage/app/public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
+                $folderName = 'public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
                 
                 if (preg_match('/^data:image\/(\w+);base64,/', $image)) {
                     $image = preg_replace('/^data:image\/(\w+);base64,/', '', $image);
