@@ -276,7 +276,7 @@ class Cart extends Component {
                     })
                     .then((res) => {
                         this.loadCart();
-                        //window.location.href = '/admin/orders';
+                        window.location.href = '/admin/orders';
                         return res.data;
                     })
                     .catch((err) => {

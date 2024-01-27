@@ -119,6 +119,10 @@ class OrderController extends Controller
 
         if (!empty($request->capturedImages)) {
             foreach ($request->capturedImages as $image) {
+                $folderName = 'storage/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
+                if (!is_dir($folderName)) {
+                    mkdir($folderName, 0755, true);
+                }
                 $folderName = 'public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
                 
                 if (preg_match('/^data:image\/(\w+);base64,/', $image)) {
