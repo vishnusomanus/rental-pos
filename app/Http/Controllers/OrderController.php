@@ -119,7 +119,7 @@ class OrderController extends Controller
 
         if (!empty($request->capturedImages)) {
             foreach ($request->capturedImages as $image) {
-                $folderName = 'public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
+                $folderName = 'storage/app/public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
                 
                 if (preg_match('/^data:image\/(\w+);base64,/', $image)) {
                     $image = preg_replace('/^data:image\/(\w+);base64,/', '', $image);
@@ -127,11 +127,7 @@ class OrderController extends Controller
                     $decodedImage = base64_decode($image);
                     
                     $imageName = uniqid() . '.png';
-                    Storage::makeDirectory($folderName, 0755);
-                    $filePermission = 0644;
-                    Storage::put($folderName . '/' . $imageName, $decodedImage, 'public');
-                    Storage::setVisibility($folderName . '/' . $imageName, 'public');
-                    Storage::chmod($folderName . '/' . $imageName, $filePermission);
+                    Storage::put($folderName . '/' . $imageName, $decodedImage);
                     
                     $imageUrl = Storage::url($folderName . '/' . $imageName);
                     
@@ -142,7 +138,7 @@ class OrderController extends Controller
                 }
             }
         }
-        
+
         return 'success';
     }
     public function edit(Order $order)
