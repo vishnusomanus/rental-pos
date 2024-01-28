@@ -25,6 +25,7 @@ class Cart extends Component {
             showScanner: false,
             showCamera: false,
             capturedImages: [],
+            selectedImages: [],
         };
 
         this.loadCart = this.loadCart.bind(this);
@@ -49,6 +50,8 @@ class Cart extends Component {
         this.handleOpenCamera = this.handleOpenCamera.bind(this);
         this.handleCaptureImage = this.handleCaptureImage.bind(this);
         this.handleCloseModal = this.handleCloseModal.bind(this);
+
+        this.handleUploadImages = this.handleUploadImages.bind(this);
     }
 
     componentDidMount() {
@@ -71,6 +74,31 @@ class Cart extends Component {
 
     handleCloseModal = () => {
         this.setState({ showCamera: false });
+    };
+
+    handleUploadImages = async (event) => {
+        const files = Array.from(event.target.files);
+        const images = [];
+
+        const readFile = (file) =>
+            new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (err) => reject(err);
+                reader.readAsDataURL(file);
+            });
+
+        for (const file of files) {
+            try {
+                const image = await readFile(file);
+                images.push(image);
+            } catch (error) {
+                console.log("Error reading file:", error);
+            }
+        }
+
+        console.log(images);
+        this.setState({ selectedImages: images });
     };
 
     // load the transaltions for the react component
@@ -256,7 +284,10 @@ class Cart extends Component {
         this.setState({ customer_notes: event.target.value });
     }
 
-    handleClickSubmit() {
+    handleClickSubmit = () => {
+        const fileInput = document.getElementById("upload");
+        const additionalFiles = Array.from(fileInput.files);
+    
         Swal.fire({
             title: this.state.translations["received_amount"],
             input: "text",
@@ -266,17 +297,28 @@ class Cart extends Component {
             confirmButtonText: this.state.translations["confirm_pay"],
             showLoaderOnConfirm: true,
             preConfirm: (amount) => {
+                // Create form data
+                const formData = new FormData();
+                formData.append("customer_id", this.state.customer_id);
+                formData.append("customer_proof", this.state.customer_proof);
+                formData.append("customer_notes", this.state.customer_notes);
+                formData.append("amount", amount);
+                formData.append("capturedImages", this.state.capturedImages);
+
+                if(this.state.selectedImages.length)
+                    additionalFiles.forEach((file) => {
+                        formData.append("additionalFiles[]", file);
+                    });
+    
                 return axios
-                    .post("/admin/orders", {
-                        customer_id: this.state.customer_id,
-                        customer_proof: this.state.customer_proof,
-                        customer_notes: this.state.customer_notes,
-                        amount,
-                        capturedImages: this.state.capturedImages,
+                    .post("/admin/orders", formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
                     })
                     .then((res) => {
                         this.loadCart();
-                        window.location.href = '/admin/orders';
+                        //window.location.href = "/admin/orders";
                         return res.data;
                     })
                     .catch((err) => {
@@ -289,7 +331,9 @@ class Cart extends Component {
                 //
             }
         });
-    }
+    };
+    
+    
     render() {
         $(".selectpicker").selectpicker("refresh");
         const {
@@ -300,22 +344,62 @@ class Cart extends Component {
             translations,
             showScanner,
             showCamera,
+            selectedImages,
         } = this.state;
         return (
             <>
-                <div className="d-flex flex-row-reverse">
-                    <div className=" mb-2">
+                <div className="row flex-row-reverse">
+                    <div className="col mb-2">
                         <button
                             type="button"
-                            className="btn btn-dark"
+                            className="btn btn-dark btn-block btn-sm"
                             onClick={this.handleOpenCamera.bind(this)}
                         >
-                            <i className="fas fa-camera"></i>
+                            <i className="fas fa-camera"></i> Capture
                         </button>
+                    </div>
+                    <div className="col">
+                        <label
+                            htmlFor="upload"
+                            className="btn btn-primary btn-block btn-sm"
+                        >
+                            <i className="fas fa-upload"></i> Upload
+                        </label>
+                        <input
+                            id="upload"
+                            type="file"
+                            multiple
+                            style={{ display: "none" }}
+                            onChange={this.handleUploadImages}
+                            accept="image/*"
+                        />
                     </div>
                 </div>
                 <div className="mb-2 images_captured">
-                    {this.state.capturedImages.length != 0  && <div><strong>Captured Images</strong></div>}
+                    {selectedImages.length > 0 && (
+                        <div className="row mt-3">
+                            <div className="col">
+                                <div>
+                                    <strong>Selected Images</strong>
+                                </div>
+                                <div className="image-preview">
+                                    {selectedImages.map((image, index) => (
+                                        <img
+                                            key={index}
+                                            src={image}
+                                            alt={`Selected Image ${index}`}
+                                            className="preview-image"
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {this.state.capturedImages.length != 0 && (
+                        <div>
+                            <strong>Captured Images</strong>
+                        </div>
+                    )}
                     {this.state.capturedImages.map((image, index) => (
                         <img
                             key={index}
@@ -558,19 +642,38 @@ class Cart extends Component {
                         </div>
                         <div className="row">
                             <div className="col">
-                                <input
-                                    type="text"
-                                    placeholder="Rental Guarantee: ID Cards, Passports, etc."
-                                    className="form-control mb-2"
+                                <select
+                                    className="form-control mb-2 selectpicker"
+                                    value={this.state.customer_proof}
                                     onChange={this.setCustomerProof}
-                                />
+                                    data-live-search="true"
+                                >
+                                    <option value="">Select Proof</option>
+                                    <option value="Aadhaar Card">Aadhaar Card</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Voter ID Card">Voter ID Card</option>
+                                    <option value="PAN Card">PAN Card</option>
+                                    <option value="Driving License">Driving License</option>
+                                    <option value="Identity Card">Identity Card</option>
+                                    <option value="Ration Card">Ration Card</option>
+                                    <option value="Bank Passbook">Bank Passbook</option>
+                                    <option value="Birth Certificate">Birth Certificate</option>
+                                    <option value="Caste Certificate">Caste Certificate</option>
+                                    <option value="Income Certificate">Income Certificate</option>
+                                    <option value="Residence Certificate">Residence Certificate</option>
+                                    <option value="Employment Card">Employment Card</option>
+                                    <option value="Student ID Card">Student ID Card</option>
+                                    <option value="Health Card">Health Card</option>
+                                    <option value="Senior Citizen Card">Senior Citizen Card</option>
+                                    <option value="Army ID Card">Army ID Card</option>
+                                    <option value="Ration Smart Card">Ration Smart Card</option>
+                                </select>
                                 <textarea
                                     placeholder="Details/Notes"
                                     className="form-control mb-2"
                                     onChange={this.setCustomerNotes}
-                                >
-                                    {" "}
-                                </textarea>
+                                    value={this.state.CustomerNotes}
+                                ></textarea>
                             </div>
                         </div>
                         <div className="row">

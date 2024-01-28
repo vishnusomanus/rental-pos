@@ -9,6 +9,7 @@
     
  <!-- Sidebar user (optional) -->
   <div class="navbar-nav ml-auto">
+    <a href="{{route('cart.index')}}" class="btn btn-primary btn-sm mr-2">{{ __('cart.title') }}</a>
     <div class="image dropdown">
         <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="{{ auth()->user()->getAvatar() }}" class="img-circle elevation-2 img-sm" alt="User Image">

@@ -38,7 +38,7 @@ class CameraComponent extends React.Component {
     return (
       <div>
         <video ref={this.videoRef} autoPlay width="100%"></video>
-        <button className="btn btn-dark camera" onClick={this.captureImage}><i class="fas fa-camera"></i></button>
+        <button className="btn btn-dark camera" onClick={this.captureImage}><i className="fas fa-camera"></i></button>
         <canvas ref={this.canvasRef} style={{ display: 'none' }}></canvas>
       </div>
     );

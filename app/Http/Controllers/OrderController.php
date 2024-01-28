@@ -104,18 +104,22 @@ class OrderController extends Controller
             'white_label_id' => $request->user()->white_label_id
         ]);
 
-        // $image_path = '';
 
-        // if ($request->hasFile('image')) {
-        //     $folderName = 'public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
-        //     $image_path = $request->file('image')->store($folderName);
-        //     $imageUrl = Storage::url($image_path);
+        if ($request->hasFile('additionalFiles')) {
+            $folderName = 'public/white_label/' . $request->user()->white_label_id . '/orders/' . $order->id;
 
-        //     $order->orderImages()->create([
-        //         'image' => $imageUrl,
-        //         'description' => '',
-        //     ]);
-        // }
+            foreach ($request->file('additionalFiles') as $image) {
+                $image_path = $image->store($folderName);
+                $imageUrl = Storage::url($image_path);
+
+                $order->orderImages()->create([
+                    'image' => $imageUrl,
+                    'description' => '',
+                ]);
+
+            }
+        }
+
 
         if (!empty($request->capturedImages)) {
             foreach ($request->capturedImages as $image) {
@@ -149,6 +153,13 @@ class OrderController extends Controller
     {
         $order->load('customer', 'items.product');
         return view('orders.edit', compact('order'));
+    }
+
+    public function show(Order $order, Request $request)
+    {
+        $id = $request->id;
+        $order->load('customer', 'items.product');
+        return view('orders.show', compact('order'));
     }
     public function invoice( Request $request)
     {

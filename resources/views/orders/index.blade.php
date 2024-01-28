@@ -28,13 +28,13 @@
             <div class="col-md-5">
                 <form action="{{route('orders.index')}}">
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-5 col-sm-6 mt-sm-2">
                             <input type="date" name="start_date" class="form-control" value="{{request('start_date')}}" />
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-5 col-sm-6 mt-sm-2">
                             <input type="date" name="end_date" class="form-control" value="{{request('end_date')}}" />
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-sm-12 mt-sm-2">
                             <button class="btn btn-outline-primary" type="submit">{{ __('order.submit') }}</button>
                         </div>
                     </div>
@@ -75,6 +75,7 @@
                         <td>{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
                         <td>{{$order->created_at}}</td>
                         <td>
+                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-dark btn-sm text-black"><i class="fas fa-eye"></i></a>
                             <a target="_blank" href="{{ route('orders.invoice', $order->id) }}" class="btn btn-outline-dark btn-sm text-black"><i class="fas fa-print"></i></a>
                             <button class="btn btn-outline-dark btn-sm text-black" data-toggle="modal" data-target="#orderImagesModal{{$order->id}}">
                                 <i class="fas fa-image"></i>
