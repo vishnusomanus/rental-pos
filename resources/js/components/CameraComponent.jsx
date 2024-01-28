@@ -8,7 +8,7 @@ class CameraComponent extends React.Component {
   }
 
   componentDidMount() {
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } })
       .then(stream => {
         if (this.videoRef.current) {
           this.videoRef.current.srcObject = stream;
@@ -17,6 +17,16 @@ class CameraComponent extends React.Component {
       .catch(error => {
         console.error('Error accessing the camera:', error);
       });
+  }
+
+  stopVideoStream() {
+    const video = this.videoRef.current;
+    if (video && video.srcObject) {
+      const stream = video.srcObject;
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+      video.srcObject = null;
+    }
   }
 
   captureImage = () => {

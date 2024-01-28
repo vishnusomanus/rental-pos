@@ -74,6 +74,7 @@ class Cart extends Component {
 
     handleCloseModal = () => {
         this.setState({ showCamera: false });
+        this.cameraComponent.stopVideoStream();
     };
 
     handleUploadImages = async (event) => {
@@ -442,6 +443,8 @@ class Cart extends Component {
                                     </div>
                                     <div className="position-relative">
                                         <CameraComponent
+                                            // onCapture={this.handleCaptureImage}
+                                            ref={(ref) => (this.cameraComponent = ref)}
                                             onCapture={this.handleCaptureImage}
                                         />
                                     </div>
